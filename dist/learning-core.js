@@ -30,7 +30,7 @@
   function choices(mode,settings){
     return (mode==='feelings'?feelings:hats).map(c=>{const updated={...c,color:COLORS[c.key],...(mode==='feelings'?settings?.labels?.[c.key]||{}:{})};if(mode==='feelings'&&(updated.label!==c.label||updated.hint!==c.hint))updated.action='استمع إلى رسالة المتعلم، واختر المتابعة المناسبة لعبارة هذه البطاقة.';return updated;});
   }
-  function defaults(){return {product:'bitaqati-learning',version:2,activeMode:'feelings',settings:{title:'بذور تنمو وأعداد تفسّر',count:3,names:[],feelingsPrompt:'كيف تشعر الآن؟ اختر ما ترغب في التعبير عنه.',labels:Object.fromEntries(feelings.map(c=>[c.key,{label:c.label,hint:c.hint}])),hatPrompts:Object.fromEntries(hats.map(c=>[c.key,c.prompt]))},current:{feelings:null,hats:null},history:[]};}
+  function defaults(){return {product:'bitaqati-learning',version:2,activeMode:'feelings',settings:{title:'درس جديد',count:3,names:[],feelingsPrompt:'كيف تشعر الآن؟ اختر ما ترغب في التعبير عنه.',labels:Object.fromEntries(feelings.map(c=>[c.key,{label:c.label,hint:c.hint}])),hatPrompts:Object.fromEntries(hats.map(c=>[c.key,c.prompt]))},current:{feelings:null,hats:null},history:[]};}
   function settings(value){
     if(!value||typeof value!=='object')fail('إعدادات الجولة غير مكتملة.');
     const count=Number(value.count);if(!Number.isInteger(count)||count<1||count>40)fail('اختر عددًا من ١ إلى ٤٠.');
