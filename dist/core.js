@@ -3,7 +3,7 @@
   const letters = ['A', 'B', 'C', 'D'];
   const labels = {A:'أ', B:'ب', C:'ج', D:'د'};
   const ar = value => String(value).replace(/[0-9]/g, d => '٠١٢٣٤٥٦٧٨٩'[Number(d)]);
-  const defaultDraft = () => ({title:'بذور تنمو وأعداد تفسّر',text:'في نموذج المتابعة ٤٨ بذرة، ظهر الإنبات في ٣١ منها. قرّب العددين إلى أقرب عشرة، ثم قدّر عدد البذور التي لم يظهر إنباتها بعد.',options:{A:'١٠ تقريبًا',B:'٢٠ تقريبًا',C:'٣٠ تقريبًا',D:'٨٠ تقريبًا'},correct:'B',count:3,names:[]});
+  const defaultDraft = () => ({title:'درس جديد',text:'أدخلي سؤال الدرس بعد رفع المستند واختيار الدرس.',options:{A:'الخيار الأول',B:'الخيار الثاني',C:'الخيار الثالث',D:'الخيار الرابع'},correct:'A',count:3,names:[]});
   function fail(message) { throw new Error(message); }
   function str(value,max,label,empty=false) {
     if(typeof value !== 'string' || value.length > max || (!empty && !value.trim())) fail('تحقق من '+label+'.');
