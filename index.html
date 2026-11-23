@@ -479,10 +479,44 @@ function setBook(entries,name,selected=0){parts=entries;$('ls-part').replaceChil
 function list(id){const sel=$('ls-bank');sel.replaceChildren();option(sel,'اختاري درسًا مولدًا ومحفوظًا','');for(const k of Object.keys(localStorage).filter(k=>k.startsWith(KEY)).reverse()){try{const a=JSON.parse(localStorage[k]);option(sel,a.title,k.slice(KEY.length))}catch{}}sel.value=id||''}
 function btn(label,fn){const b=document.createElement('button');b.type='button';b.className='button secondary';b.textContent=label;b.onclick=()=>{try{fn()}catch(e){msg(e.message)}};return b}
 function fill(id,v){$(id).value=v;$(id).dispatchEvent(new Event('input',{bubbles:true}))}
-function render(a){current=a;const host=$('ls-items');host.replaceChildren();if(!a)return;
-for(const q of a.quiz)host.append(btn('بليكرز: '+q.text,()=>{document.querySelector('[data-mode="quiz"]').click();if($('setup-view').hidden){msg('أنهي الجولة المفتوحة أو عودي إلى إعداد سؤال جديد أولًا.');return}fill('lesson-title',a.title);fill('question-text',q.text);q.choices.forEach((s,i)=>fill('option-'+letters[i],s));fill('correct-answer',letters[q.key]);$('question-text').scrollIntoView({block:'center'});msg('راجعي السؤال وخياراته قبل بدء الجولة.')}));
-for(const [k,s] of Object.entries(a.hats))host.append(btn('القبعة '+hats[k]+': '+s,()=>{document.querySelector('[data-mode="hats"]').click();if($('learn-setup').hidden){msg('عودي إلى إعدادات القبعات من الجولة المفتوحة أولًا.');return}document.querySelector('[data-hat="'+k+'"]').click();fill('learn-topic',a.title);fill('learn-prompt',s);$('learn-prompt').scrollIntoView({block:'center'})}))}
-function restore(){const id=$('ls-bank').value;if(!id){render(null);return}const a=JSON.parse(localStorage.getItem(KEY+id));$('ls-title').value=a.title;$('ls-source').value=a.source;render(a)}
+const SELECTED_LESSON='bitaqati.lesson.selected.v1';
+function publishLesson(a,q){
+  if(!a)return;
+  const picked=q||a.quiz?.[0]||null;
+  const detail={id:a.id,title:a.title,question:picked?.text||'',hats:a.hats,lessonSource:a.source,questionIndex:Math.max(0,a.quiz?.indexOf(picked)||0)};
+  try{localStorage.setItem(SELECTED_LESSON,JSON.stringify(detail))}catch{}
+  window.dispatchEvent(new CustomEvent('bitaqati-lesson-selected',{detail}));
+}
+function setQuestion(a,q,move=true){
+  publishLesson(a,q);
+  if(move)document.querySelector('[data-mode="quiz"]')?.click();
+  if($('setup-view').hidden){msg('تم اختيار سؤال درس «'+a.title+'». أنهي السؤال الجاري واضغطي «سؤال جديد» ثم اختاري السؤال من القائمة.');return}
+  fill('lesson-title',a.title);fill('question-text',q.text);q.choices.forEach((value,i)=>fill('option-'+letters[i],value));fill('correct-answer',letters[q.key]);
+  if(move)$('question-text').scrollIntoView({block:'center'});
+  msg('تم تحميل سؤال «'+a.title+'» في بطاقتي. سؤال الطباعة مرتبط بهذا الدرس، ويمكنك مراجعة الخيارات قبل المسح.');
+}
+function render(a){
+  current=a;const host=$('ls-items');host.replaceChildren();
+  if(!a){try{localStorage.removeItem(SELECTED_LESSON)}catch{};return}
+  const remembered=(()=>{try{return JSON.parse(localStorage.getItem(SELECTED_LESSON)||'null')}catch{return null}})();
+  const question=a.quiz?.[remembered?.id===a.id?remembered.questionIndex:0]||a.quiz?.[0];
+  publishLesson(a,question);
+  if(question&&!$('setup-view').hidden)setQuestion(a,question,false);
+  for(const q of a.quiz)host.append(btn('بليكرز · '+q.text,()=>setQuestion(a,q,true)));
+  for(const [k,prompt] of Object.entries(a.hats)){
+    host.append(btn('القبعة '+hats[k]+' · '+prompt,()=>{
+      publishLesson(a,question);
+      document.querySelector('[data-mode="hats"]')?.click();
+      if($('learn-setup').hidden){msg('تم ربط درس «'+a.title+'» بالقبعات. أنهي الجولة المفتوحة وابدئي جولة جديدة لعرض السؤال.');return}
+      document.querySelector('[data-hat="'+k+'"]')?.click();
+      fill('learn-topic',a.title);fill('learn-prompt',prompt);
+      $('learn-prompt').scrollIntoView({block:'center'});
+      msg('سؤال القبعة '+hats[k]+' مرتبط بالدرس «'+a.title+'».');
+    }));
+  }
+  $('ls-msg').textContent='الدرس المختار: «'+a.title+'». أسئلة بطاقتي والقبعات والبطاقات القابلة للطباعة مرتبطة به.';
+}
+function restore(){const id=$('ls-bank').value;if(!id){render(null);return}try{const a=JSON.parse(localStorage.getItem(KEY+id));$('ls-title').value=a.title;$('ls-source').value=a.source;render(a)}catch(e){msg('لم يمكن قراءة الدرس المختار: '+e.message)}}
 $('ls-bank').onchange=restore;
 function group(lines){let out=[],buf=[],title='';const flush=()=>{if(buf.join(' ').trim())out.push({title:title||'نص الدرس',source:buf.join('\n')});buf=[]};for(const l of lines){if(/^\s*(?:الدرس|الوحدة|الفصل|درس)\s+\S/.test(l)&&l.trim().length<=100){flush();title=l.trim()}buf.push(l)}flush();return out}
 async function parse(f){if(f.size>35e6)throw Error('اختاري ملفًا أصغر من ٣٥ ميغابايت أو ارفعي فصلًا منه.');const ext=f.name.split('.').pop().toLowerCase();if(ext==='txt')return group((await f.text()).split(/\r?\n/));
@@ -493,9 +527,9 @@ $('ls-file').onchange=async()=>{const f=$('ls-file').files[0];if(!f)return;const
 function make(title,source){const lines=[...new Set(source.split(/[.!؟؛\n]+/).map(s=>s.trim()).filter(s=>s.length>=12&&s.length<=330))];
 const words=s=>s.match(/[\p{L}\p{M}]{3,}/gu)||[], stop=new Set('التي الذي الذين التي هذه هذا على إلى عند بعد كان تكون بين ومن وفي كما غير ذلك حيث وهي وهو خلال فقط'.split(' '));const pool=[...new Set(words(source))].filter(w=>!stop.has(w)&&w.length<45);
 const quiz=[];for(const l of lines){const term=words(l).filter(w=>pool.includes(w)&&l.split(w).length===2).sort((a,b)=>b.length-a.length)[0];if(!term)continue;const others=pool.filter(w=>!l.includes(w)).slice(0,3);if(others.length<3)continue;const key=quiz.length%4;others.splice(key,0,term);quiz.push({text:'بحسب نص الدرس، ما الكلمة الناقصة؟ «'+l.replace(term,'ــــ')+'»',choices:others,key});if(quiz.length===6)break}if(!quiz.length)throw Error('أضيفي فقرتين واضحتين من شرح الدرس بكلمات متنوعة لتكوين أربعة خيارات منه.');
-const anchor=lines[0].slice(0,140);const h={white:'ما المعلومة التي تقدمها العبارة: «'+anchor+'»؟',red:'ما شعورك تجاه الفكرة الواردة في «'+title+'»؟',black:'ما الخطأ المحتمل عند تطبيق فكرة «'+title+'» دون فهم سياقها؟',yellow:'ما فائدة تطبيق ما تعلمتِه من «'+title+'»؟',green:'اقترحي موقفًا جديدًا يوضح فكرة من «'+title+'».',blue:'لخّصي «'+title+'» في خطوتين واذكري ما تحتاجين إلى مراجعته.'};return {id:crypto.randomUUID(),title,source,quiz,hats:h}}
-$('ls-go').onclick=()=>{try{const t=$('ls-title').value.trim(),s=$('ls-source').value.trim();if(!t||!s)throw Error('اكتبي عنوان الدرس ونصه أولًا.');if(s.length>120000)throw Error('اختاري درسًا واحدًا بدل الكتاب كاملًا.');const a=make(t,s);localStorage.setItem(KEY+a.id,JSON.stringify(a));list(a.id);render(a);msg('حُفظ على هذا الجهاز. اختاري سؤالًا لفتحه في النشاط ومراجعته.')}catch(e){msg('لم يُحفظ درس جديد: '+e.message)}};
-try{list()}catch{msg('التخزين غير متاح في هذا المتصفح.')}
+const ex=i=>(lines[i%lines.length]||title).slice(0,100);const h={white:'استخرجي حقيقة وردت في الدرس مع دليلها من: «'+ex(0)+'»؟',red:'ما الانطباع الذي تثيره لديك الفكرة: «'+ex(1)+'»؟ ولماذا؟',black:'ما خطأ الفهم المحتمل عند تطبيق: «'+ex(2)+'»؟ وكيف نتجنبه؟',yellow:'ما الفائدة التعليمية من الفكرة: «'+ex(3)+'»؟',green:'اقترحي تطبيقًا جديدًا للموقف الوارد في: «'+ex(4)+'»؟',blue:'رتبي أهم أفكار درس «'+title+'» وحددي خطوة تعلم تالية انطلاقًا من: «'+ex(5)+'».'};return {id:crypto.randomUUID(),title,source,quiz,hats:h}}
+$('ls-go').onclick=()=>{try{const t=$('ls-title').value.trim(),s=$('ls-source').value.trim();if(!t||!s)throw Error('اكتبي عنوان الدرس ونصه أولًا.');if(s.length>120000)throw Error('اختاري درسًا واحدًا بدل الكتاب كاملًا.');const a=make(t,s);localStorage.setItem(KEY+a.id,JSON.stringify(a));list(a.id);render(a);if(a.quiz.length)setQuestion(a,a.quiz[0],true);msg('تم توليد أسئلة درس «'+a.title+'» وحفظها؛ بدأ السؤال الأول في بطاقتي، ويمكن اختيار بقية الأسئلة أو القبعات من القائمة.')}catch(e){msg('لم يُحفظ درس جديد: '+e.message)}};
+try{list();const selected=JSON.parse(localStorage.getItem(SELECTED_LESSON)||'null');if(selected?.id&&localStorage.getItem(KEY+selected.id)){$('ls-bank').value=selected.id;restore()}}catch{msg('التخزين أو استعادة الدروس غير متاح في هذا المتصفح.')}
 $('ls-part').disabled=true;const initialLoad=loadId;
 readBook().then(book=>{if(book?.entries?.length&&loadId===initialLoad){setBook(book.entries,book.name);msg('استعيد آخر ملف سبق رفعه. اختاري الدرس من القائمة.')}}).catch(()=>{});
 $('ls-print-quiz').onclick=()=>{document.querySelector('[data-mode="quiz"]')?.click();const sel=$('card-count'),old=sel.value;sel.value='40';$('print-cards-btn')?.click();sel.value=old;};
