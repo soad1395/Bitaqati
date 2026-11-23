@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#135d50">
-  <meta name="description" content="بطاقتي: المشاعر والاحتياجات والقبعات الست وأسئلة التقويم، ببطاقات ورقية وكاميرا. أ/ سعاد الغامدي.">
-  <title>بطاقتي | المشاعر والقبعات الست</title>
+  <meta name="description" content="بطاقتي: بليكرز للأسئلة والتقويم ببطاقات ورقية وكاميرا، والقبعات الست والمشاعر. أ/ سعاد الغامدي.">
+  <title>بطاقتي | بليكرز والقبعات الست والمشاعر</title>
   <style data-source="styles.css">
 @font-face {
   font-family: "Noto Sans Arabic";
@@ -406,7 +406,7 @@ dialog > .small-note { font-size: .77rem; margin-top: 14px; }
     <div class="header-actions"><span class="prototype-badge">نسخة تجريبية</span><button type="button" id="help-btn" class="button quiet">كيف أبدأ؟</button><button type="button" id="history-btn" class="button quiet">السجل</button></div>
   </header>
   <main class="shell" id="teacher-app" hidden>
-    <div class="page-intro"><p class="eyebrow">مشاركة من كل متعلم</p><h1>سؤال واضح. إجابات أمامك.</h1><p>اكتب سؤالك، واقرأ البطاقات بالكاميرا، ثم ناقش ما تكشفه الإجابات.</p></div>
+    <div class="page-intro"><p class="eyebrow">مشاركة من كل متعلم</p><h1>بليكرز | بطاقتي: أسئلتك وإجابات الطالبات أمامك.</h1><p>اكتب سؤالك، واقرأ البطاقات بالكاميرا، ثم ناقش ما تكشفه الإجابات.</p></div>
     <ol class="steps" aria-label="خطوات الحصة"><li id="step-setup" class="active" aria-current="step"><span>١</span> السؤال</li><li id="step-scan"><span>٢</span> المسح</li><li id="step-results"><span>٣</span> النتائج</li></ol>
     <div class="notice" id="notice" role="status" aria-live="polite" hidden></div>
     <section id="setup-view" aria-labelledby="setup-heading">
@@ -425,7 +425,7 @@ dialog > .small-note { font-size: .77rem; margin-top: 14px; }
           <div class="form-footer"><span id="save-status" class="muted" role="status">يحفظ الإعداد على هذا المتصفح</span><button type="submit" class="button primary">ابدأ السؤال <span aria-hidden="true">←</span></button></div>
         </form>
         <aside class="setup-side">
-          <section class="panel" aria-labelledby="cards-heading"><p class="eyebrow">جهّزها مرة واحدة</p><h2 id="cards-heading">بطاقات صفك</h2><label for="card-count">عدد المتعلمين</label><select id="card-count"></select><p class="muted">بطاقة مختلفة لكل متعلم، من ١ إلى ٤٠.</p><details><summary>أضف الأسماء — اختياري</summary><label for="student-names">اسم واحد في كل سطر، حسب ترتيب البطاقات</label><textarea id="student-names" rows="5" maxlength="4000" placeholder="اسم صاحب البطاقة ١&#10;اسم صاحب البطاقة ٢"></textarea></details><button type="button" id="print-cards-btn" class="button secondary full">عرض البطاقات وطباعتها</button><p class="small-note">الحرف في الأعلى هو الإجابة المختارة. استخدم بطاقات «بطاقتي» المطبوعة من هنا.</p></section>
+          <section class="panel" aria-labelledby="cards-heading"><p class="eyebrow">جهّزها مرة واحدة</p><h2 id="cards-heading">بطاقات بليكرز الخاصة ببطاقتي</h2><label for="card-count">عدد المتعلمين</label><select id="card-count"></select><p class="muted">بطاقة مختلفة لكل متعلم، من ١ إلى ٤٠.</p><details><summary>أضف الأسماء — اختياري</summary><label for="student-names">اسم واحد في كل سطر، حسب ترتيب البطاقات</label><textarea id="student-names" rows="5" maxlength="4000" placeholder="اسم صاحب البطاقة ١&#10;اسم صاحب البطاقة ٢"></textarea></details><button type="button" id="print-cards-btn" class="button secondary full">عرض بطاقات بليكرز وطباعتها (١–٤٠)</button><p class="small-note">الحرف في الأعلى هو الإجابة المختارة. استخدمي بطاقات «بطاقتي» المطبوعة من هنا مع قارئ المنصة؛ وهي ليست بطاقات تطبيق Plickers الرسمي.</p></section>
           <section class="try-panel"><span class="eyebrow">جرّب الفكرة الآن</span><h3>قبل تشغيل الكاميرا</h3><p>اختبر قراءة ثلاث بطاقات من صورة تجريبية جاهزة.</p><button type="button" id="demo-btn" class="button secondary full">تجربة سريعة دون كاميرا</button></section>
         </aside>
       </div>
