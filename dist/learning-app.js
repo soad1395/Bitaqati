@@ -16,15 +16,17 @@
   let stream=null,detector=null,tracker=null,frameTimer=null,epoch=0,pendingCamera=false,lastVideoTime=-1,facing='environment',saveTimer=null,flashTimer=null;
   let currentView='setup';
   const nav=document.createElement('nav');nav.id='learning-nav';nav.className='learning-nav';nav.setAttribute('aria-label','أقسام بطاقتي');
-  nav.innerHTML=`<button type="button" data-mode="quiz" class="mode-tile"><span class="mode-art quiz-art" aria-hidden="true">أ ب ج د</span><strong>بليكرز | بطاقتي</strong><small>أسئلة تفاعلية • مسح بالكاميرا • بطاقات مرقمة ١–٤٠</small></button><button type="button" data-mode="hats" class="mode-tile"><span class="mode-art">${hatIcon('#d4e6f6')}</span><strong>القبعات الست</strong><small>بطاقات منفصلة للتفكير من ست زوايا</small></button><button type="button" data-mode="feelings" class="mode-tile"><span class="mode-art">${dots()}</span><strong>مشاعري واحتياجي</strong><small>بطاقات للتعبير والاستماع</small></button>`;
+  nav.innerHTML=`<button type="button" data-mode="feelings" class="mode-tile"><span class="mode-art">${dots()}</span><strong>مشاعري واحتياجي</strong><small>بطاقات التعبير والاستماع</small></button><button type="button" data-mode="hats" class="mode-tile"><span class="mode-art">${hatIcon('#d4e6f6')}</span><strong>القبعات الست</strong><small>بطاقات التفكير والطباعة والكاميرا</small></button><button type="button" data-mode="quiz" class="mode-tile"><span class="mode-art quiz-art" aria-hidden="true">أ ب ج د</span><strong>بليكرز | بطاقتي</strong><small>أسئلة التقويم • طباعة ١–٤٠ • المسح بالكاميرا</small></button>`;
   document.querySelector('.app-header').after(nav);
   const quizShortcuts=document.createElement('div');
   quizShortcuts.id='bitaqati-quiz-shortcuts';
   quizShortcuts.style.cssText='display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px;margin:12px auto 0;padding:0 16px;max-width:1120px';
-  quizShortcuts.innerHTML='<strong style="margin-inline-end:8px">بليكرز | بطاقتي</strong><button type="button" id="bitaqati-open-quiz" class="button primary">افتحي بليكرز والأسئلة</button><button type="button" id="bitaqati-print-quiz" class="button secondary">اعرضي بطاقات بليكرز واطبعيها (١–٤٠)</button><span class="small-note">بطاقات بطاقتي الخاصة؛ لا يلزم استخدام حساب Plickers.</span>';
+  quizShortcuts.innerHTML='<strong style="margin-inline-end:8px">بطاقتي الأصلية</strong><button type="button" id="bitaqati-upload-lesson" class="button primary">📚 رفع درس واختياره</button><button type="button" id="bitaqati-open-quiz" class="button secondary">أسئلة بليكرز</button><button type="button" id="bitaqati-print-quiz" class="button secondary">بطاقات بليكرز ١–٤٠ للطباعة</button><button type="button" id="bitaqati-print-hats" class="button secondary">بطاقات القبعات الست للطباعة</button><span class="small-note">كل قسم له بطاقاته وقارئ الكاميرا الخاص به.</span>';
   nav.after(quizShortcuts);
-  quizShortcuts.querySelector('#bitaqati-open-quiz').addEventListener('click',()=>setMode('quiz'));
-  quizShortcuts.querySelector('#bitaqati-print-quiz').addEventListener('click',()=>{setMode('quiz');document.querySelector('#print-cards-btn')?.click()});
+  quizShortcuts.querySelector('#bitaqati-upload-lesson').addEventListener('click',()=>{const box=document.querySelector('#bitaqati-lesson-studio');if(box){box.open=true;box.scrollIntoView({behavior:'smooth',block:'start'});}});
+  quizShortcuts.querySelector('#bitaqati-open-quiz').addEventListener('click',()=>{setMode('quiz');document.querySelector('#setup-view')?.scrollIntoView({behavior:'smooth',block:'start'})});
+  quizShortcuts.querySelector('#bitaqati-print-quiz').addEventListener('click',()=>{setMode('quiz');const count=document.querySelector('#card-count'),old=count?.value;if(count)count.value='40';document.querySelector('#print-cards-btn')?.click();if(count)count.value=old;});
+  quizShortcuts.querySelector('#bitaqati-print-hats').addEventListener('click',()=>{setMode('hats');document.querySelector('#learn-print')?.click();});
   const root=document.createElement('main');root.id='learning-app';root.className='shell learning-shell';$('teacher-app').before(root);
   root.innerHTML=`
     <div class="page-intro learning-intro"><div><p class="eyebrow" id="learn-eyebrow">مساحة للتعبير والاستماع</p><h1 id="learn-title">لكل متعلم… صوت يُسمع.</h1><p id="learn-description">التعبير اختياري. اختر بطاقة تعبّر عن شعورك أو احتياجك الآن.</p></div><button class="button quiet" type="button" id="learn-help">دليل الاستخدام</button></div>
@@ -260,5 +262,5 @@
   document.addEventListener('visibilitychange',()=>{if(document.hidden&&(stream||pendingCamera))stopCamera('توقف المسح عند مغادرة الصفحة. شغّله للاستكمال.');});window.addEventListener('pagehide',()=>stopCamera());window.addEventListener('afterprint',()=>document.body.classList.remove('printing-learning'));
   // Programmatic mode switching is also used by the original question module.
   window.BitaqatiLearning=Object.freeze({setMode,stopCamera});
-  mode=state.activeMode;renderSetup();setMode('quiz',false);if(loadError)notify('تعذر قراءة بيانات سابقة لهذين القسمين. بقيت محفوظة دون استبدال. استخدم نسخة احتياطية صحيحة.','error');
+  mode=state.activeMode;renderSetup();setMode(state.activeMode,false);if(loadError)notify('تعذر قراءة بيانات سابقة لهذين القسمين. بقيت محفوظة دون استبدال. استخدم نسخة احتياطية صحيحة.','error');
 })();
