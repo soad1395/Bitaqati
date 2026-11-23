@@ -82,14 +82,14 @@
 'use strict';
 const $=id=>document.getElementById(id), nav=$('learning-nav'); if(!nav){if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});return}if(location.hash.includes('display')||new URLSearchParams(location.search).has('display'))return;
 const box=document.createElement('details');box.open=true;box.className='panel';box.id='bitaqati-lesson-studio';box.style.cssText='max-width:1120px;margin:12px auto;padding:18px;border:2px solid #b9dcd2';
-box.innerHTML='<summary><strong>📚 ارفعي درسك هنا | من كتابك إلى أسئلة بطاقتي والقبعات الست</strong></summary><div style="display:grid;gap:12px"><p class="small-note">١. اختاري ملف PDF أو Word أو TXT يحتوي نصًا قابلًا للاستخراج. ٢. اختاري الدرس أو الصفحة من القائمة بعد الرفع. ٣. اضغطي «توليد وحفظ». لن يتغير السؤال إلى درس جديد قبل اختيار سؤال من القائمة المولّدة.</p><label style="font-weight:700">١ — رفع الكتاب أو الدرس<input id="ls-file" type="file" accept=".pdf,.docx,.txt"></label><p id="ls-upload-status" role="status" class="small-note">لم يُرفع ملف في هذه الجلسة بعد. ستبقى الدروس التي تستخرجينها محفوظة على هذا الجهاز عند إعادة فتح الموقع.</p><section id="ls-book-pages" style="padding:12px;border:2px solid #2c7363;border-radius:12px;background:#f3faf6"><label style="font-weight:700;font-size:1.1rem">📖 ٢ — صفحات الكتاب المرفوع (هذه قائمة صفحات PDF)<select id="ls-part" aria-label="اختيار صفحة من الكتاب PDF" style="width:100%"></select></label><p class="small-note">تصفحي جميع صفحات الكتاب هنا، وليس في قائمة الدروس المحفوظة بالأسفل.</p><div id="ls-range-wrap" style="margin-top:12px;padding:12px;border:1px solid #a4c8be;border-radius:10px;background:#fff"><label for="ls-page-ranges" style="font-weight:700">🎯 اختاري صفحات محددة لتوليد الأسئلة منها فقط</label><input id="ls-page-ranges" type="text" dir="ltr" inputmode="text" placeholder="مثال: 25-30, 35, 38-40" aria-describedby="ls-ranges-help" style="width:100%;margin-top:7px"><p id="ls-ranges-help" class="small-note">اكتبي أرقام الصفحات كما تظهر في ملف PDF، مثال: ٢٥-٣٠، ٣٥، ٤٢. يمكنك اختيار صفحات متفرقة أو متتالية، بحد أقصى ٢٠ صفحة دفعة واحدة.</p><button type="button" id="ls-use-pages" class="button primary">استخراج الصفحات المحددة فقط</button><p id="ls-pages-status" role="status" class="small-note">ارفعي الكتاب أولًا، ثم اكتبي الأرقام واضغطي استخراج.</p></div></section><div id="ls-page-controls" style="display:flex;flex-wrap:wrap;align-items:center;gap:8px"><button type="button" id="ls-prev" class="button secondary">الصفحة السابقة</button><button type="button" id="ls-next" class="button secondary">الصفحة التالية</button><strong id="ls-page-position" aria-live="polite">لم يُرفع كتاب بعد</strong></div><p class="small-note" id="ls-pdf-note">ستظهر الصفحات جميعها في القائمة، ويمكن التنقل بينها. عند وجود صفحات مصورة ستظهر معاينتها، لكن توليد الأسئلة منها يتطلب نصًا قابلًا للاستخراج أو إدخال النص يدويًا.</p><canvas id="ls-page-preview" hidden style="max-width:100%;width:600px;border:1px solid #cbd5d1;border-radius:8px" aria-label="معاينة صفحة الكتاب"></canvas><details id="ls-native-wrap" hidden style="border:1px solid #97b8ae;border-radius:12px;padding:10px"><summary style="font-weight:700;cursor:pointer">📖 عرض الكتاب الأصلي كاملًا داخل الآيباد (كل الصفحات)</summary><p class="small-note">عرض الكتاب لا يحتاج إلى استخراج نصه. افتحي الصفحات بالتمرير، وإذا تعذرت المعاينة افتحي الكتاب في نافذة مستقلة.</p><a id="ls-native-open" class="button secondary" target="_blank" rel="noopener">فتح PDF كاملًا في نافذة مستقلة</a><iframe id="ls-native-pdf" title="عرض الكتاب الأصلي بكل صفحاته" style="display:block;width:100%;height:65vh;min-height:400px;border:1px solid #cbd5d1;margin-top:10px" loading="lazy"></iframe></details><label>عنوان الدرس<input id="ls-title" maxlength="100"></label><label>راجعي نص الدرس أو الصقيه هنا<textarea id="ls-source" rows="6"></textarea></label><button type="button" class="button primary" id="ls-go">٣ — ولّدي أسئلة بطاقتي والقبعات الست واحفظي الدرس</button><div role="status" id="ls-msg"></div><section style="padding:12px;border:2px dashed #ba9e60;border-radius:12px"><label style="font-weight:700">💾 ٤ — الدروس التي تم توليدها وحفظها (ليست صفحات الكتاب)<select id="ls-bank" aria-label="قائمة الدروس المحفوظة"></select></label><p class="small-note">ظهور «صفحة ١» هنا يعني أن درسًا واحدًا محفوظًا بهذا الاسم. لا يعني أن كتاب PDF صفحة واحدة.</p><button type="button" id="ls-back-to-pages" class="button secondary">⬆️ اذهبي إلى صفحات الكتاب كلها (الخطوة ٢)</button></section><p class="small-note">اضغطي على أحد أسئلة بطاقتي المولدة أدناه لفتحها، أو على إحدى القبعات الست لتحضير جولتها. يمكنك تعديل السؤال قبل المسح.</p><div id="ls-items" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:9px"></div><div style="display:flex;gap:10px;flex-wrap:wrap"><button type="button" id="ls-print-quiz" class="button secondary">🖨️ بطاقات بطاقتي ١–٤٠ للطباعة</button><button type="button" id="ls-print-hats" class="button secondary">🖨️ بطاقات القبعات الست للطباعة</button><button type="button" id="ls-guide-camera" class="button quiet">📷 طريقة مسح البطاقات بالكاميرا</button></div><details><summary>حفظ دروسي في حسابي واستعادتها</summary><label>بريد المعلمة<input type="email" id="ls-email"></label><button id="ls-send" type="button">إرسال رمز الدخول</button><label>أو كلمة مرور حساب بطاقتي<input id="ls-pass" type="password" autocomplete="current-password"></label><button type="button" id="ls-password">دخول بكلمة المرور</button><label>رمز البريد<input id="ls-code" inputmode="numeric"></label><button id="ls-login" type="button">دخول</button> <button id="ls-sync" type="button">حفظ الدرس المختار في حسابي</button> <button id="ls-read" type="button">استعادة دروسي من الحساب</button> <button id="ls-out" type="button">خروج</button><p id="ls-cloud" role="status"></p><p class="small-note">لأول استخدام: أنشئي حسابك ببريد إلكتروني وكلمة مرور، ثم أكّدي البريد إذا طُلِب. الحفظ السحابي خاص بحسابك.</p><button id="ls-register" type="button" class="button secondary">إنشاء حساب معلمة جديد</button><hr><p><strong>حفظ نتائج البطاقات والجولات</strong></p><button id="ls-save-all" type="button" class="button secondary">حفظ جميع جولات هذا الجهاز سحابيًا</button> <button id="ls-read-all" type="button" class="button secondary">استعادة الجولات من حسابي</button><p class="small-note">قد تتضمن الجولات أسماء طالبات أو ملاحظات خاصة؛ لا تحفظيها سحابيًا إلا وفق سياسة المدرسة. قبل الاستعادة ستُنَزَّل نسخة محلية احتياطية.</p></details></div>';
+box.innerHTML='<summary><strong>📚 ارفعي درسك هنا | من كتابك إلى أسئلة بطاقتي والقبعات الست</strong></summary><div style="display:grid;gap:12px"><p class="small-note">١. اختاري ملف PDF أو Word أو TXT يحتوي نصًا قابلًا للاستخراج. ٢. اختاري الدرس أو الصفحة من القائمة بعد الرفع. ٣. اضغطي «توليد وحفظ». لن يتغير السؤال إلى درس جديد قبل اختيار سؤال من القائمة المولّدة.</p><label style="font-weight:700">١ — رفع الكتاب أو الدرس<input id="ls-file" type="file" accept=".pdf,.docx,.txt,.pptx,.epub,.rtf,.doc,.odt"></label><p id="ls-upload-status" role="status" class="small-note">لم يُرفع ملف في هذه الجلسة بعد. ستبقى الدروس التي تستخرجينها محفوظة على هذا الجهاز عند إعادة فتح الموقع.</p><section id="ls-book-pages" style="padding:12px;border:2px solid #2c7363;border-radius:12px;background:#f3faf6"><label style="font-weight:700;font-size:1.1rem">📖 ٢ — صفحات الكتاب المرفوع (هذه قائمة صفحات PDF)<select id="ls-part" aria-label="اختيار صفحة من الكتاب PDF" style="width:100%"></select></label><p class="small-note">تصفحي جميع صفحات الكتاب هنا، وليس في قائمة الدروس المحفوظة بالأسفل.</p><div id="ls-range-wrap" style="margin-top:12px;padding:12px;border:1px solid #a4c8be;border-radius:10px;background:#fff"><label for="ls-page-ranges" style="font-weight:700">🎯 اختاري صفحات محددة لتوليد الأسئلة منها فقط</label><input id="ls-page-ranges" type="text" dir="ltr" inputmode="text" placeholder="مثال: 25-30, 35, 38-40" aria-describedby="ls-ranges-help" style="width:100%;margin-top:7px"><p id="ls-ranges-help" class="small-note">اكتبي أرقام الصفحات كما تظهر في ملف PDF، مثال: ٢٥-٣٠، ٣٥، ٤٢. يمكنك اختيار صفحات متفرقة أو متتالية، بحد أقصى ٢٠ صفحة دفعة واحدة.</p><button type="button" id="ls-use-pages" class="button primary">استخراج الصفحات المحددة فقط</button><p id="ls-pages-status" role="status" class="small-note">ارفعي الكتاب أولًا، ثم اكتبي الأرقام واضغطي استخراج.</p></div></section><div id="ls-page-controls" style="display:flex;flex-wrap:wrap;align-items:center;gap:8px"><button type="button" id="ls-prev" class="button secondary">الصفحة السابقة</button><button type="button" id="ls-next" class="button secondary">الصفحة التالية</button><strong id="ls-page-position" aria-live="polite">لم يُرفع كتاب بعد</strong></div><p class="small-note" id="ls-pdf-note">ستظهر الصفحات جميعها في القائمة، ويمكن التنقل بينها. عند وجود صفحات مصورة ستظهر معاينتها، لكن توليد الأسئلة منها يتطلب نصًا قابلًا للاستخراج أو إدخال النص يدويًا.</p><canvas id="ls-page-preview" hidden style="max-width:100%;width:600px;border:1px solid #cbd5d1;border-radius:8px" aria-label="معاينة صفحة الكتاب"></canvas><details id="ls-native-wrap" hidden style="border:1px solid #97b8ae;border-radius:12px;padding:10px"><summary style="font-weight:700;cursor:pointer">📖 عرض الكتاب الأصلي كاملًا داخل الآيباد (كل الصفحات)</summary><p class="small-note">عرض الكتاب لا يحتاج إلى استخراج نصه. افتحي الصفحات بالتمرير، وإذا تعذرت المعاينة افتحي الكتاب في نافذة مستقلة.</p><a id="ls-native-open" class="button secondary" target="_blank" rel="noopener">فتح PDF كاملًا في نافذة مستقلة</a><iframe id="ls-native-pdf" title="عرض الكتاب الأصلي بكل صفحاته" style="display:block;width:100%;height:65vh;min-height:400px;border:1px solid #cbd5d1;margin-top:10px" loading="lazy"></iframe></details><label>عنوان الدرس<input id="ls-title" maxlength="100"></label><label>راجعي نص الدرس أو الصقيه هنا<textarea id="ls-source" rows="6"></textarea></label><button type="button" class="button primary" id="ls-go">٣ — ولّدي أسئلة بطاقتي والقبعات الست واحفظي الدرس</button><div role="status" id="ls-msg"></div><details id="ls-archive-details" open style="padding:14px;border:2px solid #c4ad7d;border-radius:12px"><summary style="font-weight:700">🗂️ أرشيف كتبي وصفحات الدروس والأسئلة المحفوظة — خاص بحسابي</summary><p class="small-note">بعد تسجيل الدخول تُرفع الكتب الجديدة إلى أرشيف خاص، وتُحفظ مجموعات الصفحات التي اخترتها. لا يوجد حذف تلقائي، والحذف يتم منك بعد تأكيد صريح. الكتب التي تتجاوز ٤٠ ميغابايت لا يمكن تخزينها في هذا الأرشيف المجاني.</p><button id="ls-archive-refresh" type="button" class="button secondary">تحديث أرشيف كتبي وصفحات دروسي</button><button id="ls-archive-save-pending" type="button" class="button secondary">حفظ الكتاب المرفوع في السحابة</button><p id="ls-archive-status" role="status" class="small-note">سجّلي الدخول أدناه لحفظ الكتب والصفحات في حسابك واستعادتها من أي جهاز.</p><h3>الكتب المحفوظة</h3><div id="ls-archive-books" style="display:grid;gap:8px"></div><h3>الصفحات المختارة سابقًا</h3><div id="ls-archive-sets" style="display:grid;gap:8px"></div></details><section style="padding:12px;border:2px dashed #ba9e60;border-radius:12px"><label style="font-weight:700">💾 ٤ — الدروس التي تم توليدها وحفظها (ليست صفحات الكتاب)<select id="ls-bank" aria-label="قائمة الدروس المحفوظة"></select></label><p class="small-note">ظهور «صفحة ١» هنا يعني أن درسًا واحدًا محفوظًا بهذا الاسم. لا يعني أن كتاب PDF صفحة واحدة.</p><button type="button" id="ls-back-to-pages" class="button secondary">⬆️ اذهبي إلى صفحات الكتاب كلها (الخطوة ٢)</button></section><p class="small-note">اضغطي على أحد أسئلة بطاقتي المولدة أدناه لفتحها، أو على إحدى القبعات الست لتحضير جولتها. يمكنك تعديل السؤال قبل المسح.</p><div id="ls-items" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:9px"></div><div style="display:flex;gap:10px;flex-wrap:wrap"><button type="button" id="ls-print-quiz" class="button secondary">🖨️ بطاقات بطاقتي ١–٤٠ للطباعة</button><button type="button" id="ls-print-hats" class="button secondary">🖨️ بطاقات القبعات الست للطباعة</button><button type="button" id="ls-guide-camera" class="button quiet">📷 طريقة مسح البطاقات بالكاميرا</button></div><details><summary>حفظ دروسي في حسابي واستعادتها</summary><label>بريد المعلمة<input type="email" id="ls-email"></label><button id="ls-send" type="button">إرسال رمز الدخول</button><label>أو كلمة مرور حساب بطاقتي<input id="ls-pass" type="password" autocomplete="current-password"></label><button type="button" id="ls-password">دخول بكلمة المرور</button><label>رمز البريد<input id="ls-code" inputmode="numeric"></label><button id="ls-login" type="button">دخول</button> <button id="ls-sync" type="button">حفظ الدرس المختار في حسابي</button> <button id="ls-read" type="button">استعادة دروسي من الحساب</button> <button id="ls-out" type="button">خروج</button><p id="ls-cloud" role="status"></p><p class="small-note">لأول استخدام: أنشئي حسابك ببريد إلكتروني وكلمة مرور، ثم أكّدي البريد إذا طُلِب. الحفظ السحابي خاص بحسابك.</p><button id="ls-register" type="button" class="button secondary">إنشاء حساب معلمة جديد</button><hr><p><strong>حفظ نتائج البطاقات والجولات</strong></p><button id="ls-save-all" type="button" class="button secondary">حفظ جميع جولات هذا الجهاز سحابيًا</button> <button id="ls-read-all" type="button" class="button secondary">استعادة الجولات من حسابي</button><p class="small-note">قد تتضمن الجولات أسماء طالبات أو ملاحظات خاصة؛ لا تحفظيها سحابيًا إلا وفق سياسة المدرسة. قبل الاستعادة ستُنَزَّل نسخة محلية احتياطية.</p></details></div>';
 nav.after(box);if(new URLSearchParams(location.search).get('open')==='upload'){box.open=true;setTimeout(()=>box.scrollIntoView({behavior:'smooth',block:'start'}),0)}
 const msg=(s)=>$('ls-msg').textContent=s, cloud=s=>$('ls-cloud').textContent=s, KEY='bitaqati.lesson.v1:', letters='ABCD', hats={white:'البيضاء',red:'الحمراء',black:'السوداء',yellow:'الصفراء',green:'الخضراء',blue:'الزرقاء'};
-let parts=[],current=null,loadId=0;
+let parts=[],current=null,loadId=0,pendingArchiveFile=null,activeBookId=null,lastPageSetId=null;
 const option=(sel,label,v)=>sel.add(new Option(label,v));
 const CACHE_DB='bitaqati-book-cache',CACHE_STORE='uploads';
 function cacheDB(){return new Promise((resolve,reject)=>{if(!window.indexedDB){reject(new Error('لا يتوفر حفظ الملفات المستخرجة في هذا المتصفح.'));return}const r=indexedDB.open(CACHE_DB,1);r.onupgradeneeded=()=>r.result.createObjectStore(CACHE_STORE,{keyPath:'id'});r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error||new Error('تعذر فتح ذاكرة الملفات'));})}
-async function cacheBook(name,entries){const db=await cacheDB();return new Promise((resolve,reject)=>{const t=db.transaction(CACHE_STORE,'readwrite');t.objectStore(CACHE_STORE).put({id:'latest',name,entries,updatedAt:new Date().toISOString()});t.oncomplete=()=>{db.close();resolve()};t.onerror=()=>{db.close();reject(t.error)}})}
+async function cacheBook(name,entries){const db=await cacheDB();return new Promise((resolve,reject)=>{const t=db.transaction(CACHE_STORE,'readwrite');t.objectStore(CACHE_STORE).put({id:'latest',name,entries,updatedAt:new Date().toISOString()});t.objectStore(CACHE_STORE).put({id:'book-'+crypto.randomUUID(),name,entries,updatedAt:new Date().toISOString()});t.oncomplete=()=>{db.close();resolve()};t.onerror=()=>{db.close();reject(t.error)}})}
 async function readBook(){const db=await cacheDB();return new Promise((resolve,reject)=>{const t=db.transaction(CACHE_STORE,'readonly'),r=t.objectStore(CACHE_STORE).get('latest');r.onsuccess=()=>{db.close();resolve(r.result||null)};r.onerror=()=>{db.close();reject(r.error)}})}
 function setBook(entries,name,selected=0){parts=entries;$('ls-part').replaceChildren();for(let i=0;i<entries.length;i++)option($('ls-part'),entries[i].title,''+i);$('ls-part').value=String(Math.min(Math.max(0,selected),entries.length-1));$('ls-part').disabled=!entries.length;$('ls-part').onchange();$('ls-upload-status').textContent= '📖 كتاب '+name+' — عدد صفحات PDF: '+entries.filter(x=>x.pageNumber).length+'. افتحي قائمة الصفحات في الخطوة ٢؛ أما الخطوة ٤ فتضم الدروس المحفوظة.';}
 
@@ -292,13 +292,14 @@ $('ls-use-pages').onclick=async()=>{
         failed.push(num);
       }
     }
-    if(!pieces.length)throw Error('تعذر استخراج نص من الصفحات المختارة. ربما الكتاب صور ممسوحة ضوئيًا؛ يمكن عرضها، لكن تحويلها إلى أسئلة يتطلب نصًا قابلًا للاستخراج.');
     const title='الصفحات '+numbers.join('، ');
+    const selectedText=pieces.join('\n\n');
     $('ls-title').value=title.slice(0,100);
-    $('ls-source').value=pieces.join('\n\n');
-    const note='تم استخراج نص '+pieces.length+' صفحة من الصفحات المحددة فقط.'+(empty.length?' صفحات مصوّرة بلا نص: '+empty.join('، ')+'.':'')+(failed.length?' صفحات تعذرت قراءتها: '+failed.join('، ')+'.':'');
-    status.textContent=note;
-    msg(note+' راجعي النص ثم اضغطي «ولّدي أسئلة بطاقتي والقبعات الست».');
+    $('ls-source').value=selectedText;
+    const note='تم تحديد '+numbers.length+' صفحة؛ استخرج نص '+pieces.length+' صفحة.'+(empty.length?' صفحات مصوّرة بلا نص: '+empty.join('، ')+'.':'')+(failed.length?' صفحات تعذرت قراءتها: '+failed.join('، ')+'.':'');
+    const saved=await archivePageSet(numbers,selectedText,title);
+    status.textContent=note+' '+saved;
+    msg(note+' '+saved+(selectedText?' راجعي النص ثم اضغطي توليد الأسئلة.':' يلزم نص قابل للاستخراج أو إدخاله يدويًا لتوليد الأسئلة.'));
     $('ls-source').scrollIntoView({behavior:'smooth',block:'center'});
   }catch(e){status.textContent='لم تكتمل العملية: '+e.message;msg('لم تكتمل العملية: '+e.message)}
   finally{button.disabled=false}
@@ -341,7 +342,7 @@ $('ls-part').onchange=async()=>{
 $('ls-file').onchange=async()=>{
   const f=$('ls-file').files[0];if(!f)return;
   const n=++loadId,ext=f.name.split('.').pop().toLowerCase();
-  showNativePDF(f);
+  showNativePDF(f);pendingArchiveFile=f;activeBookId=null;lastPageSetId=null;
   if(activePdfDoc){try{await activePdfDoc.destroy()}catch{}activePdfDoc=null}
   parts=[];$('ls-part').replaceChildren();$('ls-part').disabled=true;$('ls-pages-status').textContent='جارٍ فتح الكتاب؛ يمكنك اختيار الصفحات بعد اكتمال فتحه.';
   $('ls-source').value='';$('ls-title').value='';$('ls-go').disabled=true;
@@ -363,7 +364,7 @@ $('ls-file').onchange=async()=>{
       msg('تعذر فتح PDF بمكتبة الاستخراج: '+e.message+' — اضغطي «عرض الكتاب الأصلي كاملًا» أدناه لتصفّح صفحاته.');
       if(ext==='pdf'){$('ls-native-wrap').open=true;setBook([{title:'📖 تصفح الكتاب كاملًا في معاينة PDF',source:'',viewOnly:true}],f.name)}
     }
-  }finally{if(n===loadId)$('ls-go').disabled=false}
+  }finally{if(n===loadId){$('ls-go').disabled=false;if(auth?.access_token&&pendingArchiveFile===f)archiveBookFile(f).catch(e=>archiveMsg('لم يكتمل أرشفة الكتاب: '+e.message));else archiveMsg('الكتاب متاح على جهازك. سجّلي الدخول أدناه لحفظ الملف الأصلي في الأرشيف السحابي.')}}
 };
 function textLooksFragmentedArabic(source){
 const words=(source.match(/[ء-ي]+/g)||[]);
@@ -373,7 +374,7 @@ function make(title,source){const lines=[...new Set(source.split(/[.!؟؛\n]+/).
 const words=s=>s.match(/[\p{L}\p{M}]{3,}/gu)||[], stop=new Set('التي الذي الذين التي هذه هذا على إلى عند بعد كان تكون بين ومن وفي كما غير ذلك حيث وهي وهو خلال فقط'.split(' '));const pool=[...new Set(words(source))].filter(w=>!stop.has(w)&&w.length<45);
 const quiz=[];for(const l of lines){const term=words(l).filter(w=>pool.includes(w)&&l.split(w).length===2).sort((a,b)=>b.length-a.length)[0];if(!term)continue;const others=pool.filter(w=>!l.includes(w)).slice(0,3);if(others.length<3)continue;const key=quiz.length%4;others.splice(key,0,term);quiz.push({text:'بحسب نص الدرس، ما الكلمة الناقصة؟ «'+l.replace(term,'ــــ')+'»',choices:others,key});if(quiz.length===6)break}if(!quiz.length)throw Error('أضيفي فقرتين واضحتين من شرح الدرس بكلمات متنوعة لتكوين أربعة خيارات منه.');
 const ex=i=>(lines[i%lines.length]||title).slice(0,100);const h={white:'استخرجي حقيقة وردت في الدرس مع دليلها من: «'+ex(0)+'»؟',red:'ما الانطباع الذي تثيره لديك الفكرة: «'+ex(1)+'»؟ ولماذا؟',black:'ما خطأ الفهم المحتمل عند تطبيق: «'+ex(2)+'»؟ وكيف نتجنبه؟',yellow:'ما الفائدة التعليمية من الفكرة: «'+ex(3)+'»؟',green:'اقترحي تطبيقًا جديدًا للموقف الوارد في: «'+ex(4)+'»؟',blue:'رتبي أهم أفكار درس «'+title+'» وحددي خطوة تعلم تالية انطلاقًا من: «'+ex(5)+'».'};return {id:crypto.randomUUID(),title,source,quiz,hats:h}}
-$('ls-go').onclick=async()=>{const button=$('ls-go');button.disabled=true;try{const t=$('ls-title').value.trim(),s=$('ls-source').value.trim();if(!t||!s)throw Error('اختاري صفحة من الكتاب واستخرجي نصها أولًا. عرض الكتاب وحده لا يكفي لتوليد الأسئلة.');if(s.length>120000)throw Error('اختاري درسًا واحدًا بدل الكتاب كاملًا.');if(textLooksFragmentedArabic(s))throw Error('النص العربي المستخرج من الملف يبدو متقطعًا، لذلك أوقفت توليد الأسئلة غير الصحيحة. اعرضي الصفحة من المعاينة وصححي النص أو ارفعي نسخة PDF نصية واضحة.');const a=make(t,s);localStorage.setItem(KEY+a.id,JSON.stringify(a));list(a.id);render(a);if(a.quiz.length)setQuestion(a,a.quiz[0],true);msg('تم إعداد أسئلة درس «'+a.title+'» وحفظها على جهازك.');if(auth?.access_token){try{await saveLessonCloud(a);msg('تم حفظ درس «'+a.title+'» في حسابك السحابي والتأكد من استعادته.')}catch(e){msg('الدرس محفوظ على جهازك فقط؛ تعذر الحفظ السحابي: '+e.message)}}else msg('الدرس محفوظ على هذا الجهاز. سجّلي الدخول في قسم الحفظ السحابي لمزامنته بين الأجهزة.')}catch(e){msg('لم يُحفظ درس جديد: '+e.message)}finally{button.disabled=false}};
+$('ls-go').onclick=async()=>{const button=$('ls-go');button.disabled=true;try{const t=$('ls-title').value.trim(),s=$('ls-source').value.trim();if(!t||!s)throw Error('اختاري صفحة من الكتاب واستخرجي نصها أولًا. عرض الكتاب وحده لا يكفي لتوليد الأسئلة.');if(s.length>120000)throw Error('اختاري درسًا واحدًا بدل الكتاب كاملًا.');if(textLooksFragmentedArabic(s))throw Error('النص العربي المستخرج من الملف يبدو متقطعًا، لذلك أوقفت توليد الأسئلة غير الصحيحة. اعرضي الصفحة من المعاينة وصححي النص أو ارفعي نسخة PDF نصية واضحة.');const a=make(t,s);localStorage.setItem(KEY+a.id,JSON.stringify(a));if(lastPageSetId){try{await updatePageSetAfterGeneration(lastPageSetId,s,a.id)}catch(e){archiveMsg('تم إنشاء الأسئلة محليًا؛ تعذر ربطها بالصفحات المؤرشفة: '+e.message)}}list(a.id);render(a);if(a.quiz.length)setQuestion(a,a.quiz[0],true);msg('تم إعداد أسئلة درس «'+a.title+'» وحفظها على جهازك.');if(auth?.access_token){try{await saveLessonCloud(a);msg('تم حفظ درس «'+a.title+'» في حسابك السحابي والتأكد من استعادته.')}catch(e){msg('الدرس محفوظ على جهازك فقط؛ تعذر الحفظ السحابي: '+e.message)}}else msg('الدرس محفوظ على هذا الجهاز. سجّلي الدخول في قسم الحفظ السحابي لمزامنته بين الأجهزة.')}catch(e){msg('لم يُحفظ درس جديد: '+e.message)}finally{button.disabled=false}};
 try{list();const selected=JSON.parse(localStorage.getItem(SELECTED_LESSON)||'null');if(selected?.id&&localStorage.getItem(KEY+selected.id)){$('ls-bank').value=selected.id;restore()}}catch{msg('التخزين أو استعادة الدروس غير متاح في هذا المتصفح.')}
 $('ls-part').disabled=true;const initialLoad=loadId;
 readBook().then(book=>{if(book?.entries?.length&&loadId===initialLoad){setBook(book.entries,book.name);msg('استعيد آخر ملف سبق رفعه. اختاري الدرس من القائمة.')}}).catch(()=>{});
@@ -389,6 +390,159 @@ action('ls-send',async()=>{const email=$('ls-email').value.trim();if(!$('ls-emai
 action('ls-login',async()=>{if(!rememberAuth(await req('/auth/v1/verify',{method:'POST',body:JSON.stringify({type:'email',email:$('ls-email').value.trim(),token:$('ls-code').value.trim()})})))throw Error('لم يكتمل التحقق من الحساب.');$('ls-code').value='';await syncLessonsOnLogin()});
 action('ls-password',async()=>{const password=$('ls-pass').value;if(!rememberAuth(await req('/auth/v1/token?grant_type=password',{method:'POST',body:JSON.stringify({email:$('ls-email').value.trim(),password})})))throw Error('لم يكتمل الدخول.');$('ls-pass').value='';await syncLessonsOnLogin()});
 async function token(){if(!auth?.access_token)throw Error('سجلي الدخول أولًا.');if(!auth.expires_at||auth.expires_at*1000<Date.now()+30000)rememberAuth(await req('/auth/v1/token?grant_type=refresh_token',{method:'POST',body:JSON.stringify({refresh_token:auth.refresh_token})}));return auth.access_token}
+
+const ARCHIVE_BUCKET='bitaqati-books',PAGE_SETS_KEY='bitaqati.pageSets.v1:';
+let archiveUploadPromise=null,archiveUploadFile=null;
+const archiveMsg=(message)=>{const node=$('ls-archive-status');if(node)node.textContent=message;};
+async function archiveBookFile(file){
+  if(!file)throw Error('اختاري ملف كتاب أولًا.');
+  if(!auth?.access_token)throw Error('سجلي الدخول إلى حساب بطاقتي أولًا.');
+  if(file.size>41943040)throw Error('حجم هذا الكتاب أكبر من ٤٠ ميغابايت. ارفعي ملفًا أصغر أو قسميه؛ لن تُحذف أي نسخة موجودة.');
+  if(archiveUploadPromise&&archiveUploadFile===file)return archiveUploadPromise;
+  const task=(async()=>{
+    const owner=auth.user.id,t=await token();
+    const ext=(file.name.split('.').pop()||'bin').toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,12)||'bin';
+    const bookId=crypto.randomUUID(),path=owner+'/'+bookId+'.'+ext;
+    archiveMsg('جارٍ حفظ كتاب «'+file.name+'» في الأرشيف الخاص…');
+    const uploaded=await fetch(url+'/storage/v1/object/'+ARCHIVE_BUCKET+'/'+path,{
+      method:'POST',headers:{apikey:pub,Authorization:'Bearer '+t,'Content-Type':file.type||'application/octet-stream','x-upsert':'false'},body:file
+    });
+    const response=await uploaded.text();
+    if(!uploaded.ok)throw Error('رفضت مساحة التخزين رفع الملف (رمز '+uploaded.status+'): '+response.slice(0,180));
+    const item={id:bookId,owner_id:owner,file_name:file.name.slice(0,500),file_bytes:file.size,mime_type:file.type||'application/octet-stream',storage_path:path};
+    await req('/rest/v1/bitaqati_book_archive',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify(item)},t);
+    const checked=await req('/rest/v1/bitaqati_book_archive?id=eq.'+bookId+'&select=id,file_name',{},t);
+    if(!checked?.length)throw Error('لم يكتمل توثيق الكتاب في الأرشيف.');
+    activeBookId=bookId;
+    if(pendingArchiveFile===file)pendingArchiveFile=null;
+    archiveMsg('تم حفظ الكتاب الأصلي «'+file.name+'» سحابيًا والتحقق من وجوده في الأرشيف.');
+    await renderCloudArchive();
+    return bookId;
+  })();
+  archiveUploadFile=file;archiveUploadPromise=task;
+  try{return await task}finally{archiveUploadPromise=null;archiveUploadFile=null}
+}
+async function downloadArchivedBook(row){
+  const t=await token();
+  const safePath=row.storage_path.split('/').map(encodeURIComponent).join('/');
+  const response=await fetch(url+'/storage/v1/object/authenticated/'+ARCHIVE_BUCKET+'/'+safePath,{headers:{apikey:pub,Authorization:'Bearer '+t}});
+  if(!response.ok)throw Error('تعذر تنزيل الكتاب من الأرشيف (رمز '+response.status+').');
+  const blob=await response.blob();
+  return new File([blob],row.file_name,{type:row.mime_type||blob.type||'application/octet-stream'});
+}
+function archiveLine(title,note){
+  const box=document.createElement('div');box.style.cssText='border:1px solid #bdd4c9;border-radius:9px;padding:10px;background:#fff';
+  const label=document.createElement('strong');label.textContent=title;
+  const extra=document.createElement('p');extra.textContent=note;extra.className='small-note';
+  box.append(label,extra);return box;
+}
+function archiveButton(label,handler){
+  const btn=document.createElement('button');btn.type='button';btn.textContent=label;btn.className='button secondary';btn.style.margin='4px';
+  btn.addEventListener('click',async()=>{btn.disabled=true;try{await handler()}catch(e){archiveMsg('لم تكتمل العملية: '+e.message)}finally{btn.disabled=false}});
+  return btn;
+}
+async function renderCloudArchive(){
+  const booksHost=$('ls-archive-books'),setsHost=$('ls-archive-sets');
+  if(!auth?.access_token){booksHost.textContent='سجّلي الدخول لعرض الكتب الخاصة بك.';setsHost.textContent='سجّلي الدخول لعرض الصفحات المؤرشفة.';return}
+  const t=await token();
+  const [books,sets]=await Promise.all([
+    req('/rest/v1/bitaqati_book_archive?select=id,file_name,file_bytes,mime_type,storage_path,created_at&order=created_at.desc&limit=200',{},t),
+    req('/rest/v1/bitaqati_page_sets?select=id,book_id,title,page_numbers,source_text,created_at&order=created_at.desc&limit=200',{},t)
+  ]);
+  booksHost.replaceChildren();setsHost.replaceChildren();
+  if(!books.length)booksHost.textContent='لا توجد كتب محفوظة سحابيًا بعد.';
+  if(!sets.length)setsHost.textContent='لا توجد مجموعات صفحات محفوظة بعد.';
+  for(const book of books){
+    const box=archiveLine('📚 '+book.file_name,'حُفظ في '+new Date(book.created_at).toLocaleDateString('ar-SA')+' — '+(book.file_bytes/1048576).toFixed(1)+' ميغابايت');
+    box.append(archiveButton('فتح الكتاب المحفوظ',async()=>{
+      const file=await downloadArchivedBook(book);
+      activeBookId=book.id;pendingArchiveFile=null;
+      showNativePDF(file);
+      if(file.name.toLowerCase().endsWith('.pdf')){
+        try{const entries=await parse(file);setBook(entries,file.name);archiveMsg('فُتح الكتاب من الأرشيف، ويمكنك اختيار صفحاته الآن.')}
+        catch(e){$('ls-native-wrap').open=true;archiveMsg('فُتح PDF للعرض فقط، لكن قراءة الصفحات لم تنجح: '+e.message)}
+      }else{
+        try{const entries=await parse(file);setBook(entries,file.name);archiveMsg('فُتح الكتاب من الأرشيف.')}
+        catch{archiveMsg('تم استعادة الملف الأصلي؛ هذا النوع ليس مدعومًا لاستخراج الأسئلة، لكن يمكنك تنزيله.')}
+      }
+      $('ls-book-pages').scrollIntoView({behavior:'smooth',block:'start'});
+    }));
+    box.append(archiveButton('تنزيل النسخة الأصلية',async()=>{
+      const file=await downloadArchivedBook(book),blobUrl=URL.createObjectURL(file),a=document.createElement('a');
+      a.href=blobUrl;a.download=book.file_name;document.body.append(a);a.click();a.remove();
+      setTimeout(()=>URL.revokeObjectURL(blobUrl),10000);
+      archiveMsg('جرى طلب تنزيل الكتاب «'+book.file_name+'».');
+    }));
+    box.append(archiveButton('حذف الكتاب نهائيًا',async()=>{
+      if(!confirm('هل تريدين حذف كتاب «'+book.file_name+'» نهائيًا من الأرشيف؟ لا يمكن التراجع. ستبقى نصوص الصفحات المستخرجة المحفوظة منفصلة.'))return;
+      const t=await token();
+      const deleted=await fetch(url+'/storage/v1/object/'+ARCHIVE_BUCKET,{method:'DELETE',headers:{apikey:pub,Authorization:'Bearer '+t,'Content-Type':'application/json'},body:JSON.stringify({prefixes:[book.storage_path]})});
+      if(!deleted.ok)throw Error('لم يُحذف الملف من التخزين؛ لم تتغير سجلات الأرشيف.');
+      await req('/rest/v1/bitaqati_book_archive?id=eq.'+book.id,{method:'DELETE'},t);
+      if(activeBookId===book.id)activeBookId=null;
+      archiveMsg('حُذف الكتاب بناءً على تأكيدك. لم تُحذف الدروس أو الصفحات المحفوظة.');
+      await renderCloudArchive();
+    }));
+    booksHost.append(box);
+  }
+  for(const set of sets){
+    const box=archiveLine('📑 '+set.title,'الصفحات: '+(set.page_numbers||[]).join('، ')+' — '+new Date(set.created_at).toLocaleDateString('ar-SA'));
+    box.append(archiveButton('استخدام الصفحات المحفوظة',async()=>{
+      $('ls-title').value=set.title;
+      $('ls-source').value=set.source_text||'';
+      $('ls-page-ranges').value=(set.page_numbers||[]).join(', ');
+      lastPageSetId=set.id;
+      activeBookId=set.book_id;
+      $('ls-source').scrollIntoView({behavior:'smooth',block:'center'});
+      archiveMsg('استعيدت الصفحات المختارة؛ يمكنك مراجعة النص ثم توليد الأسئلة منها.');
+    }));
+    box.append(archiveButton('حذف مجموعة الصفحات نهائيًا',async()=>{
+      if(!confirm('حذف مجموعة الصفحات «'+set.title+'» نهائيًا؟ لن تُحذف بقية الكتب أو الدروس.'))return;
+      const t=await token();
+      await req('/rest/v1/bitaqati_page_sets?id=eq.'+set.id,{method:'DELETE'},t);
+      try{localStorage.removeItem(PAGE_SETS_KEY+set.id)}catch{}
+      if(lastPageSetId===set.id)lastPageSetId=null;
+      archiveMsg('حُذفت مجموعة الصفحات التي اخترت حذفها فقط.');
+      await renderCloudArchive();
+    }));
+    setsHost.append(box);
+  }
+  archiveMsg('الأرشيف الخاص بك: '+books.length+' كتاب و'+sets.length+' مجموعة صفحات. لا يُحذف أي عنصر تلقائيًا من التطبيق.');
+}
+async function saveCloudPageSet(record){
+  const owner=auth.user.id,t=await token();
+  await req('/rest/v1/bitaqati_page_sets?on_conflict=id',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify({id:record.id,owner_id:owner,book_id:record.book_id||null,title:record.title,page_numbers:record.page_numbers,source_text:record.source_text})},t);
+  const check=await req('/rest/v1/bitaqati_page_sets?id=eq.'+record.id+'&select=id,title',{},t);
+  if(!check?.length)throw Error('لم يتم تأكيد حفظ الصفحات في الأرشيف.');
+}
+async function archivePageSet(numbers,source,title){
+  const record={id:crypto.randomUUID(),book_id:activeBookId||null,title:title.slice(0,490),page_numbers:numbers,source_text:source,created_at:new Date().toISOString()};
+  lastPageSetId=record.id;
+  try{localStorage.setItem(PAGE_SETS_KEY+record.id,JSON.stringify(record))}catch(e){throw Error('تعذر حفظ الصفحات على الجهاز: '+e.message)}
+  if(auth?.access_token){
+    try{await saveCloudPageSet(record);await renderCloudArchive();return 'حُفظت هذه الصفحات المحددة في أرشيف حسابك.'}
+    catch(e){return 'الصفحات محفوظة محليًا، وتعذرت مزامنتها سحابيًا: '+e.message}
+  }
+  return 'حُفظ اختيار الصفحات على هذا الجهاز، وسينتقل للسحابة عند تسجيل الدخول.';
+}
+async function updatePageSetAfterGeneration(id,source,lessonId){
+  const key=PAGE_SETS_KEY+id,raw=localStorage.getItem(key);if(!raw)return;
+  const record=JSON.parse(raw);
+  record.source_text=source;
+  localStorage.setItem(key,JSON.stringify(record));
+  if(auth?.access_token)await saveCloudPageSet(record);
+}
+async function refreshArchiveOnLogin(){
+  if(!auth?.access_token)return;
+  if(pendingArchiveFile){try{await archiveBookFile(pendingArchiveFile)}catch(e){archiveMsg('الكتاب لم يُحفظ سحابيًا: '+e.message)}}
+  for(const key of Object.keys(localStorage).filter(k=>k.startsWith(PAGE_SETS_KEY))){
+    try{await saveCloudPageSet(JSON.parse(localStorage.getItem(key)))}catch(e){archiveMsg('تعذرت مزامنة مجموعة صفحات: '+e.message)}
+  }
+  await renderCloudArchive();
+}
+$('ls-archive-refresh').onclick=async()=>{try{await renderCloudArchive()}catch(e){archiveMsg('تعذر تحديث الأرشيف: '+e.message)}};
+$('ls-archive-save-pending').onclick=async()=>{try{await archiveBookFile(pendingArchiveFile)}catch(e){archiveMsg('لم يكتمل حفظ الكتاب: '+e.message)}};
+
 async function saveLessonCloud(record){const t=await token(),owner=auth.user.id;await req('/rest/v1/bitaqati_lesson_bank?on_conflict=owner_id,id',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify({id:record.id,owner_id:owner,lesson:record})},t);const got=await req('/rest/v1/bitaqati_lesson_bank?select=lesson&owner_id=eq.'+owner+'&id=eq.'+record.id,{},t);if(got?.[0]?.lesson?.source!==record.source)throw Error('لم تتأكد إعادة قراءة النسخة.')}
 action('ls-sync',async()=>{if(!current)throw Error('اختاري درسًا محفوظًا.');await saveLessonCloud(current);cloud('تأكد حفظ الدرس وإعادة قراءته من حسابك.')});
 async function syncLessonsOnLogin(){
@@ -408,6 +562,7 @@ try{
   }
   list(current?.id);
   cloud('المزامنة ناجحة: رُفعت '+uploaded+' دروس من هذا الجهاز، واستعيد '+downloaded+' درس من حسابك.');
+  try{await refreshArchiveOnLogin()}catch(e){archiveMsg('تعذر تحميل أرشيف الكتب: '+e.message)}
 }catch(e){cloud('تم تسجيل الدخول؛ تعذرت مزامنة بعض الدروس: '+e.message+'. دروس هذا الجهاز لم تُحذف.')}
 }
 action('ls-read',async()=>{const t=await token(),rows=await req('/rest/v1/bitaqati_lesson_bank?select=lesson&owner_id=eq.'+auth.user.id,{},t);let n=0;for(const {lesson:a} of rows){if(!a?.id||!a.title||!Array.isArray(a.quiz)||!a.hats||typeof a.source!=='string')continue;if(!localStorage.getItem(KEY+a.id)){localStorage.setItem(KEY+a.id,JSON.stringify(a));n++}}list(current?.id);cloud('دروس الحساب: '+rows.length+'، أُضيف لهذا الجهاز: '+n+'.')});
@@ -453,7 +608,7 @@ try{sessionStorage.setItem('bitaqati.restored','نجحت استعادة '+valid.
 location.reload();
 });
 try{const status=sessionStorage.getItem('bitaqati.restored');if(status){cloud(status);sessionStorage.removeItem('bitaqati.restored')}else if(auth?.access_token)cloud('حسابك متصل بهذه الجلسة.')}catch{}
-action('ls-out',async()=>{const t=auth?.access_token;auth=null;try{sessionStorage.removeItem('bitaqati.teacher.session')}catch{};if(t)await req('/auth/v1/logout',{method:'POST'},t);cloud('تم الخروج.')});
+action('ls-out',async()=>{const t=auth?.access_token;auth=null;activeBookId=null;await renderCloudArchive();try{sessionStorage.removeItem('bitaqati.teacher.session')}catch{};if(t)await req('/auth/v1/logout',{method:'POST'},t);cloud('تم الخروج.')});
 })();
 
 </script>
