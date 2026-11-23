@@ -340,7 +340,7 @@ dialog > .small-note { font-size: .77rem; margin-top: 14px; }
   .print-root, .print-root * { color: #000 !important; box-shadow: none !important; text-shadow: none !important; }
   .card-sheet { display: grid; grid-template-columns: repeat(2, 95mm); grid-template-rows: repeat(2, 134mm); column-gap: 0; row-gap: 6mm; width: 190mm; height: 274mm; margin: 0; padding: 0; break-after: page; page-break-after: always; break-inside: avoid; page-break-inside: avoid; }
   .card-sheet:last-child { break-after: auto; page-break-after: auto; }
-  .paper-card { display: grid; grid-template-rows: 12mm 92mm 7mm; align-content: center; width: 95mm; height: 134mm; min-width: 0; margin: 0; padding: 4mm 3mm; border: .25mm dashed #777; border-radius: 0; background: #fff !important; break-inside: avoid; page-break-inside: avoid; }
+  .paper-card { display: grid; grid-template-rows: 12mm 84mm 15mm; align-content: center; width: 95mm; height: 134mm; min-width: 0; margin: 0; padding: 4mm 3mm; border: .25mm dashed #777; border-radius: 0; background: #fff !important; break-inside: avoid; page-break-inside: avoid; }
   .paper-card:last-child { margin-bottom: 0; }
   .paper-card header { display: flex; flex-wrap: nowrap; align-items: center; gap: 5mm; margin: 0; min-width: 0; }
   .card-no { font-size: 12pt; line-height: 1.3; }
@@ -349,5 +349,7 @@ dialog > .small-note { font-size: .77rem; margin-top: 14px; }
   .marker-code { width: 64mm; height: 64mm; background: #fff !important; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .marker-code svg { display: block; width: 64mm; height: 64mm; max-width: none; overflow: visible; }
   .edge-letter { width: 7mm; height: 7mm; font-size: 13pt; line-height: 1; }
-  .paper-card footer { align-self: center; margin: 0; font-size: 8pt; line-height: 1.5; }
+  .paper-card footer { display: flex; flex-direction: column; gap: 1mm; justify-content: center; align-items: center; align-self: center; margin: 0; font-size: 8pt; line-height: 1.25; width: 100%; max-height: 15mm; overflow: hidden; }
+  .paper-card footer .quiz-footer-hint { font-size: 7.2pt; }
+  .paper-card footer .quiz-lesson-label { display: block; max-width: 100%; max-height: 10mm; overflow: hidden; text-align: center; font-size: 6.5pt; line-height: 1.16; overflow-wrap: anywhere; }
 }
