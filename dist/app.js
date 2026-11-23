@@ -129,7 +129,20 @@
     for(const s of state.history){const sum=C.summary(s);const item=el('details','history-item');const heading=el('summary');heading.append(el('strong','',s.question.title),el('span',s.mode==='demo'?'demo-label':'',s.mode==='demo'?'تجربة':'حصة'));item.append(heading,el('p','',s.question.text),el('p','small-note',new Date(s.createdAt).toLocaleString('ar-SA',{calendar:'gregory'})+' · قُرئت '+C.ar(sum.answered)+' من '+C.ar(sum.total)+' · صحيحة '+C.ar(sum.correct)));const b=el('button','button secondary','تنزيل نتائج هذه المحاولة');b.type='button';b.addEventListener('click',()=>exportCsv(s));item.append(b);$('history-list').append(item);}
     $('history-dialog').showModal();
   }
-  function makeCard(student){const card=el('section','paper-card');const header=el('header');header.append(el('strong','card-no','بطاقة '+C.ar(student.id)),el('span','card-name',student.name||''));const wrap=el('div','marker-wrap');const holder=el('div','marker-code');holder.innerHTML=window.CardVision.markerSvg(student.id);wrap.append(holder);for(const [key,pos] of [['A','top'],['B','right'],['C','bottom'],['D','left']])wrap.append(el('span','edge-letter '+pos,C.labels[key]));card.append(header,wrap,el('footer','','بطاقتي · اجعل حرف إجابتك في الأعلى'));return card;}
+  function makeCard(student){
+    const card=el('section','paper-card'),header=el('header');
+    header.append(el('strong','card-no','بطاقة '+C.ar(student.id)),el('span','card-name',student.name||''));
+    const wrap=el('div','marker-wrap'),holder=el('div','marker-code');
+    holder.innerHTML=window.CardVision.markerSvg(student.id);wrap.append(holder);
+    for(const [key,pos] of [['A','top'],['B','right'],['C','bottom'],['D','left']])wrap.append(el('span','edge-letter '+pos,C.labels[key]));
+    const footer=el('footer');
+    footer.append(el('span','quiz-footer-hint','بطاقتي · اجعل حرف إجابتك في الأعلى'));
+    const title=$('lesson-title').value.trim(),question=$('question-text').value.trim();
+    if(title&&title!=='درس جديد'&&question&&question!=='أدخلي سؤال الدرس بعد رفع المستند واختيار الدرس.'){
+      footer.append(el('span','quiz-lesson-label',title.slice(0,35)+' — '+question.slice(0,100)+(question.length>100?'…':'')));
+    }
+    card.append(header,wrap,footer);return card;
+  }
   function showCards(){
     if(!window.CardVision){notice('لم يكتمل تحميل البطاقات. أعد تحميل الصفحة.','error');return;}
     let count=Number($('card-count').value),names=$('student-names').value.split(/\r?\n/).map(s=>s.trim());if(!Number.isInteger(count)||count<1||count>40)return;
