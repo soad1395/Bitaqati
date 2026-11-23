@@ -2864,7 +2864,16 @@ AR.Detector.prototype.rotate2 = function (src, rotation) {
   document.addEventListener('visibilitychange',()=>{if(document.hidden&&(stream||pendingCamera))stopCamera('توقف المسح عند مغادرة الصفحة. شغّله للاستكمال.');});window.addEventListener('pagehide',()=>stopCamera());window.addEventListener('afterprint',()=>document.body.classList.remove('printing-learning'));
   // Programmatic mode switching is also used by the original question module.
   window.BitaqatiLearning=Object.freeze({setMode,stopCamera});
-  mode=state.activeMode;renderSetup();setMode(state.activeMode,false);if(loadError)notify('تعذر قراءة بيانات سابقة لهذين القسمين. بقيت محفوظة دون استبدال. استخدم نسخة احتياطية صحيحة.','error');
+  mode=state.activeMode;renderSetup();setMode(state.activeMode,false);
+  const directCards=new URLSearchParams(location.search).get('cards');
+  if(directCards==='quiz'){
+    setMode('quiz',false);
+    const count=$('card-count'),old=count.value;count.value='40';
+    $('print-cards-btn').click();count.value=old;
+  }else if(directCards==='hats'){
+    setMode('hats',false);$('learn-print').click();
+  }
+  if(loadError)notify('تعذر قراءة بيانات سابقة لهذين القسمين. بقيت محفوظة دون استبدال. استخدم نسخة احتياطية صحيحة.','error');
 })();
 
 </script>
