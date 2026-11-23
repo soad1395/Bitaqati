@@ -139,6 +139,13 @@
     for(let i=1;i<=count;i++){const s={id:i,name:(names[i-1]||'').slice(0,80)};if(i%2===1){sheet=el('div','card-sheet');$('print-root').append(sheet);}sheet.append(makeCard(s));$('card-previews').append(makeCard(s));}
     $('cards-dialog').showModal();
   }
+  // Preserve legacy seed-demo data before removing it from the live setup.
+  // This does not touch genuine lessons, other sessions, or any history.
+  const oldSeed=question=>typeof question==='string'&&/بذور|بذرة/.test(question)&&/(٤٨|48|٣١|31)/.test(question);
+  if(!loadError&&(oldSeed(state.draft?.text)||oldSeed(state.current?.question?.text))){
+    let preserved=false;try{localStorage.setItem('bitaqati-example-before-reset',JSON.stringify(state));preserved=true}catch{}
+    if(preserved){state.draft=C.defaultDraft();if(oldSeed(state.current?.question?.text))state.current=null;persist();}
+  }
   for(let i=1;i<=40;i++){const o=el('option','',C.ar(i));o.value=String(i);$('card-count').append(o);}fillDraft();
   $('question-form').addEventListener('input',updateDraft);$('card-count').addEventListener('change',updateDraft);$('student-names').addEventListener('input',updateDraft);
   $('question-form').addEventListener('submit',e=>{e.preventDefault();try{clearTimeout(saveTimer);state.draft=readDraft();begin(state.draft);}catch(err){notice(err.message,'error');}});
