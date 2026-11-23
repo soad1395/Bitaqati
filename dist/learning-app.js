@@ -101,6 +101,23 @@
     return C.settings(s);
   }
   function saveSettings(){state.settings=readSettings();persist();}
+  function applyUploadedLesson(data){
+    if(!data||typeof data.title!=='string'||!data.hats)return;
+    try{
+      const next=C.clone(state.settings);
+      next.title=data.title.slice(0,100);
+      for(const c of C.hats){
+        if(typeof data.hats[c.key]==='string'&&data.hats[c.key].trim())
+          next.hatPrompts[c.key]=data.hats[c.key].trim().slice(0,500);
+      }
+      state.settings=C.settings(next);
+      $('learn-topic').value=state.settings.title;
+      $('learn-prompt').value=mode==='feelings'?state.settings.feelingsPrompt:state.settings.hatPrompts[selectedHat];
+      persist();
+      if(mode==='hats'&&currentView==='setup')renderSetup();
+    }catch(error){notify('تعذر تطبيق أسئلة الدرس على القبعات: '+error.message,'error')}
+  }
+  window.addEventListener('bitaqati-lesson-selected',event=>applyUploadedLesson(event.detail));
   function scheduleSettings(){clearTimeout(saveTimer);saveTimer=setTimeout(()=>{try{saveSettings();}catch{$('learn-save-status').textContent='أكمل الإعداد لحفظه';}},250);}
   function renderEditor(){
     $('learn-label-editor').innerHTML=C.feelings.map(c=>`<div class="label-editor-row"><span class="color-swatch" style="background:${C.COLORS[c.key]}" aria-hidden="true"></span><strong>${c.name}</strong><label>العبارة<input maxlength="55" data-label="${c.key}" value="${esc(state.settings.labels[c.key].label)}"></label><label>رسالة مساعدة<input maxlength="100" data-hint="${c.key}" value="${esc(state.settings.labels[c.key].hint)}"></label></div>`).join('');
@@ -223,11 +240,11 @@
   function displayUrl(){const s=current();if(!s)return;const data={v:2,mode:s.mode,title:s.title,prompt:s.prompt,hatKey:s.hatKey,choices:s.choices.map(({key,label,hint})=>({key,label,hint}))};const url=new URL(location.href);url.hash='learn='+encodeURIComponent(encode(data));return url.href;}
   async function copyDisplay(){const url=displayUrl();if(!url)return;try{await navigator.clipboard.writeText(url);notify('نُسخ رابط التعليمات. لا يحتوي أسماء أو مشاعر فردية، ولا يزامن النتائج.');}catch{modal('رابط عرض المتعلمين',`<p>انسخ الرابط من الحقل التالي. يُعرض المحتوى فقط على الجهاز الآخر.</p><textarea rows="4" readonly id="learning-copy-link">${esc(url)}</textarea>`);$('learning-copy-link').select();}}
   function openDisplay(){const url=displayUrl();if(!url)return;const opened=window.open(url,'_blank','noopener');if(!opened)notify('إذا لم تفتح نافذة العرض، استخدم «انسخ رابط العرض».');}
-  function cardHtml(s,c,cardMode,settings){return `<section class="learning-paper-card" style="--signal:${c.color}"><header><span>${cardMode==='feelings'?'مشاعري واحتياجي':'القبعات الست'}</span><strong>المتعلم ${C.ar(s.id)}</strong></header><div class="learning-paper-body"><div class="learning-paper-text">${cardMode==='hats'?hatIcon(c.color):`<span class="paper-color" style="background:${c.color}" aria-hidden="true">${esc(c.symbol||'')}</span>`}<span class="paper-color-label">${cardMode==='hats'?'القبعة ':''}${esc(c.name)}</span><h2>${esc(c.label)}</h2><p>${esc(c.hint)}</p>${s.name?`<span class="paper-name">${esc(s.name)}</span>`:''}</div><div class="learning-paper-marker">${V.markerSvg(cardMode,s.id,c.key)}</div></div><footer>أ/ سعاد الغامدي</footer></section>`;}
+  function cardHtml(s,c,cardMode,settings){const isHat=cardMode==='hats';const question=isHat?(settings?.hatPrompts?.[c.key]||c.hint):c.hint;return `<section class="learning-paper-card" style="--signal:${c.color}"><header><span>${isHat?'القبعات الست • '+esc((settings.title||'الدرس').slice(0,55)):'مشاعري واحتياجي'}</span><strong>المتعلم ${C.ar(s.id)}</strong></header><div class="learning-paper-body"><div class="learning-paper-text">${isHat?hatIcon(c.color):`<span class="paper-color" style="background:${c.color}" aria-hidden="true">${esc(c.symbol||'')}</span>`}<span class="paper-color-label">${isHat?'القبعة ':''}${esc(c.name)}</span><h2>${esc(c.label)}</h2><p>${esc(question.slice(0,210))}</p>${s.name?`<span class="paper-name">${esc(s.name)}</span>`:''}</div><div class="learning-paper-marker">${V.markerSvg(cardMode,s.id,c.key)}</div></div><footer>أ/ سعاد الغامدي</footer></section>`;}
   function showPrint(){
     try{saveSettings();}catch(e){notify(e.message,'error');return;}
     const n=state.settings.count;
-    modal('بطاقات '+titleOf(mode),`<p>لكل متعلم ست بطاقات خاصة بهذا القسم. اختر الأرقام التي تريد طباعتها.</p><div class="print-range"><label>من رقم<input type="number" id="learning-print-from" min="1" max="40" value="1"></label><label>إلى رقم<input type="number" id="learning-print-to" min="1" max="40" value="${n}"></label></div><p class="small-note">طباعة ملونة، بحجم فعلي ١٠٠٪، وأربع بطاقات في كل ورقة A4 (صفّان × عمودان). اترك الرمز ومساحته البيضاء كاملين. تُعرض البطاقات هنا حسب عباراتك المحفوظة.</p><button type="button" class="button primary" id="learning-print-generate">جهّز المعاينة</button><p id="learning-print-info" class="small-note"></p><div id="learning-card-preview" class="learning-card-preview"></div><button type="button" class="button primary full" id="learning-print-now" hidden>اطبع البطاقات</button>`);
+    modal('بطاقات '+titleOf(mode)+(mode==='hats'?' — '+esc(state.settings.title):''),`<p>لكل متعلم ست بطاقات خاصة بهذا القسم. اختر الأرقام التي تريد طباعتها.</p><div class="print-range"><label>من رقم<input type="number" id="learning-print-from" min="1" max="40" value="1"></label><label>إلى رقم<input type="number" id="learning-print-to" min="1" max="40" value="${n}"></label></div><p class="small-note">طباعة ملونة، بحجم فعلي ١٠٠٪، وأربع بطاقات في كل ورقة A4 (صفّان × عمودان). اترك الرمز ومساحته البيضاء كاملين. تتغير أسئلة القبعات وعنوانها تلقائيًا عند اختيار درس مرفوع، مع ثبات رموز المسح لكل طالب.</p><button type="button" class="button primary" id="learning-print-generate">جهّز المعاينة</button><p id="learning-print-info" class="small-note"></p><div id="learning-card-preview" class="learning-card-preview"></div><button type="button" class="button primary full" id="learning-print-now" hidden>اطبع البطاقات</button>`);
     $('learning-print-generate').addEventListener('click',()=>{
       const from=+$('learning-print-from').value,to=+$('learning-print-to').value;if(!Number.isInteger(from)||!Number.isInteger(to)||from<1||to>40||from>to){$('learning-print-info').textContent='اختر نطاقًا صحيحًا من ١ إلى ٤٠.';return;}
       const cs=C.choices(mode,state.settings);let all=[],sheets=[];for(let id=from;id<=to;id++)for(const c of cs)all.push(cardHtml({id,name:state.settings.names[id-1]||''},c,mode,state.settings));for(let i=0;i<all.length;i+=4)sheets.push('<div class="learning-paper-sheet">'+all.slice(i,i+4).join('')+'</div>');printRoot.innerHTML=sheets.join('');$('learning-card-preview').innerHTML=all.slice(0,6).join('');$('learning-print-info').textContent=C.ar(all.length)+' بطاقة على '+C.ar(sheets.length)+' أوراق. المعاينة أدناه لست بطاقات المتعلم '+C.ar(from)+'.'+(to>n?' تنبيه: أرقام الطباعة أكبر من عدد الجولة الحالي؛ ارفع العدد عند استخدامها.':'');$('learning-print-now').hidden=false;
@@ -264,12 +281,15 @@
   window.BitaqatiLearning=Object.freeze({setMode,stopCamera});
   mode=state.activeMode;renderSetup();setMode(state.activeMode,false);
   const directCards=new URLSearchParams(location.search).get('cards');
-  if(directCards==='quiz'){
-    setMode('quiz',false);
-    const count=$('card-count'),old=count.value;count.value='40';
-    $('print-cards-btn').click();count.value=old;
-  }else if(directCards==='hats'){
-    setMode('hats',false);$('learn-print').click();
+  if(directCards==='quiz'||directCards==='hats'){
+    const openCards=()=>{
+      if(directCards==='quiz'){
+        setMode('quiz',false);const count=$('card-count'),old=count.value;count.value='40';
+        $('print-cards-btn').click();count.value=old;
+      }else{setMode('hats',false);$('learn-print').click();}
+    };
+    if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(openCards,0),{once:true});
+    else setTimeout(openCards,0);
   }
   if(loadError)notify('تعذر قراءة بيانات سابقة لهذين القسمين. بقيت محفوظة دون استبدال. استخدم نسخة احتياطية صحيحة.','error');
 })();
