@@ -136,7 +136,7 @@
     if(names.slice(count).some(n=>n)){notice('عدد الأسماء أكبر من عدد البطاقات. عدّل العدد أو القائمة قبل الطباعة.','error');return;}
     if(names.some(n=>n.length>80)){notice('اختصر الاسم إلى ٨٠ حرفًا أو أقل قبل الطباعة.','error');return;}
     $('card-previews').replaceChildren();$('print-root').replaceChildren();let sheet=null;
-    for(let i=1;i<=count;i++){const s={id:i,name:(names[i-1]||'').slice(0,80)};if(i%2===1){sheet=el('div','card-sheet');$('print-root').append(sheet);}sheet.append(makeCard(s));$('card-previews').append(makeCard(s));}
+    for(let i=1;i<=count;i++){const s={id:i,name:(names[i-1]||'').slice(0,80)};if((i-1)%4===0){sheet=el('div','card-sheet');$('print-root').append(sheet);}sheet.append(makeCard(s));$('card-previews').append(makeCard(s));}
     $('cards-dialog').showModal();
   }
   // Preserve legacy seed-demo data before removing it from the live setup.
