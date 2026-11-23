@@ -82,7 +82,7 @@
 'use strict';
 const $=id=>document.getElementById(id), nav=$('learning-nav'); if(!nav){if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});return}if(location.hash.includes('display')||new URLSearchParams(location.search).has('display'))return;
 const box=document.createElement('details');box.className='panel';box.style.cssText='max-width:1050px;margin:12px auto;padding:16px';
-box.innerHTML='<summary><strong>دروسي | رفع كتاب وتوليد البليكرز والقبعات الست</strong></summary><div style="display:grid;gap:10px"><label>ارفعي كتابًا نصيًا PDF أو Word (.docx) أو TXT<input id="ls-file" type="file" accept=".pdf,.docx,.txt"></label><label>اختاري الدرس أو الصفحة<select id="ls-part"></select></label><label>عنوان الدرس<input id="ls-title" maxlength="100"></label><label>راجعي نص الدرس أو الصقيه هنا<textarea id="ls-source" rows="6"></textarea></label><button type="button" class="button primary" id="ls-go">ولّدي النشاطين واحفظيهما على هذا الجهاز</button><div role="status" id="ls-msg"></div><label>دروسي المحفوظة<select id="ls-bank"></select></label><div id="ls-items"></div><details><summary>حفظ دروسي في حسابي واستعادتها</summary><label>بريد المعلمة<input type="email" id="ls-email"></label><button id="ls-send" type="button">إرسال رمز الدخول</button><label>أو كلمة مرور حساب بطاقتي<input id="ls-pass" type="password" autocomplete="current-password"></label><button type="button" id="ls-password">دخول بكلمة المرور</button><label>رمز البريد<input id="ls-code" inputmode="numeric"></label><button id="ls-login" type="button">دخول</button> <button id="ls-sync" type="button">حفظ الدرس المختار في حسابي</button> <button id="ls-read" type="button">استعادة دروسي من الحساب</button> <button id="ls-out" type="button">خروج</button><p id="ls-cloud" role="status"></p></details></div>';
+box.innerHTML='<summary><strong>دروسي | رفع كتاب وتوليد البليكرز والقبعات الست</strong></summary><div style="display:grid;gap:10px"><label>ارفعي كتابًا نصيًا PDF أو Word (.docx) أو TXT<input id="ls-file" type="file" accept=".pdf,.docx,.txt"></label><label>اختاري الدرس أو الصفحة<select id="ls-part"></select></label><label>عنوان الدرس<input id="ls-title" maxlength="100"></label><label>راجعي نص الدرس أو الصقيه هنا<textarea id="ls-source" rows="6"></textarea></label><button type="button" class="button primary" id="ls-go">ولّدي النشاطين واحفظيهما على هذا الجهاز</button><div role="status" id="ls-msg"></div><label>دروسي المحفوظة<select id="ls-bank"></select></label><div id="ls-items"></div><details><summary>حفظ دروسي في حسابي واستعادتها</summary><label>بريد المعلمة<input type="email" id="ls-email"></label><button id="ls-send" type="button">إرسال رمز الدخول</button><label>أو كلمة مرور حساب بطاقتي<input id="ls-pass" type="password" autocomplete="current-password"></label><button type="button" id="ls-password">دخول بكلمة المرور</button><label>رمز البريد<input id="ls-code" inputmode="numeric"></label><button id="ls-login" type="button">دخول</button> <button id="ls-sync" type="button">حفظ الدرس المختار في حسابي</button> <button id="ls-read" type="button">استعادة دروسي من الحساب</button> <button id="ls-out" type="button">خروج</button><p id="ls-cloud" role="status"></p><p class="small-note">لأول استخدام: أنشئي حسابك ببريد إلكتروني وكلمة مرور، ثم أكّدي البريد إذا طُلِب. الحفظ السحابي خاص بحسابك.</p><button id="ls-register" type="button" class="button secondary">إنشاء حساب معلمة جديد</button><hr><p><strong>حفظ نتائج البطاقات والجولات</strong></p><button id="ls-save-all" type="button" class="button secondary">حفظ جميع جولات هذا الجهاز سحابيًا</button> <button id="ls-read-all" type="button" class="button secondary">استعادة الجولات من حسابي</button><p class="small-note">قد تتضمن الجولات أسماء طالبات أو ملاحظات خاصة؛ لا تحفظيها سحابيًا إلا وفق سياسة المدرسة. قبل الاستعادة ستُنَزَّل نسخة محلية احتياطية.</p></details></div>';
 nav.after(box);
 const msg=(s)=>$('ls-msg').textContent=s, cloud=s=>$('ls-cloud').textContent=s, KEY='bitaqati.lesson.v1:', letters='ABCD', hats={white:'البيضاء',red:'الحمراء',black:'السوداء',yellow:'الصفراء',green:'الخضراء',blue:'الزرقاء'};
 let parts=[],current=null,loadId=0;
@@ -107,17 +107,59 @@ const quiz=[];for(const l of lines){const term=words(l).filter(w=>pool.includes(
 const anchor=lines[0].slice(0,140);const h={white:'ما المعلومة التي تقدمها العبارة: «'+anchor+'»؟',red:'ما شعورك تجاه الفكرة الواردة في «'+title+'»؟',black:'ما الخطأ المحتمل عند تطبيق فكرة «'+title+'» دون فهم سياقها؟',yellow:'ما فائدة تطبيق ما تعلمتِه من «'+title+'»؟',green:'اقترحي موقفًا جديدًا يوضح فكرة من «'+title+'».',blue:'لخّصي «'+title+'» في خطوتين واذكري ما تحتاجين إلى مراجعته.'};return {id:crypto.randomUUID(),title,source,quiz,hats:h}}
 $('ls-go').onclick=()=>{try{const t=$('ls-title').value.trim(),s=$('ls-source').value.trim();if(!t||!s)throw Error('اكتبي عنوان الدرس ونصه أولًا.');if(s.length>120000)throw Error('اختاري درسًا واحدًا بدل الكتاب كاملًا.');const a=make(t,s);localStorage.setItem(KEY+a.id,JSON.stringify(a));list(a.id);render(a);msg('حُفظ على هذا الجهاز. اختاري سؤالًا لفتحه في النشاط ومراجعته.')}catch(e){msg('لم يُحفظ درس جديد: '+e.message)}};
 try{list()}catch{msg('التخزين غير متاح في هذا المتصفح.')}
-const url='https://tkxksbbujmsuudguxiiv.supabase.co', pub='sb_publishable_7wpYQQP8VlZvTQBEvdFz3w_x7Rw5UGV';let auth=null;
+const url='https://tkxksbbujmsuudguxiiv.supabase.co', pub='sb_publishable_7wpYQQP8VlZvTQBEvdFz3w_x7Rw5UGV';let auth=null;try{auth=JSON.parse(sessionStorage.getItem('bitaqati.teacher.session')||'null')}catch{};function rememberAuth(data){if(data?.access_token&&data?.refresh_token){auth=data;try{sessionStorage.setItem('bitaqati.teacher.session',JSON.stringify(auth))}catch{};return true}return false}
 async function req(path,options={},token){const r=await fetch(url+path,{...options,headers:{'Content-Type':'application/json',apikey:pub,...(token?{Authorization:'Bearer '+token}:{}),...options.headers}});const raw=await r.text();let data;try{data=JSON.parse(raw)}catch{}if(!r.ok)throw Error(data?.msg||data?.message||'تعذر الاتصال بالحساب.');return data}
 function action(id,fn){$(id).onclick=async()=>{const b=$(id);b.disabled=true;try{await fn()}catch(e){cloud('لم تكتمل العملية: '+e.message)}finally{b.disabled=false}}}
-// Verified teacher accounts only; do not create accounts from the public page.
-action('ls-send',async()=>{const email=$('ls-email').value.trim();if(!$('ls-email').checkValidity()||!email)throw Error('أدخلي بريد الحساب.');await req('/auth/v1/otp',{method:'POST',body:JSON.stringify({email,create_user:false})});cloud('راجعي بريد حسابك المسجّل. يلزم رمز الدخول من رسالة المشروع.')});
-action('ls-login',async()=>{auth=await req('/auth/v1/verify',{method:'POST',body:JSON.stringify({type:'email',email:$('ls-email').value.trim(),token:$('ls-code').value.trim()})});$('ls-code').value='';cloud('تم الدخول إلى الحساب.')});
-action('ls-password',async()=>{const password=$('ls-pass').value;auth=await req('/auth/v1/token?grant_type=password',{method:'POST',body:JSON.stringify({email:$('ls-email').value.trim(),password})});$('ls-pass').value='';cloud('تم الدخول إلى الحساب.')});
-async function token(){if(!auth?.access_token)throw Error('سجلي الدخول أولًا.');if(auth.expires_at*1000<Date.now()+30000)auth=await req('/auth/v1/token?grant_type=refresh_token',{method:'POST',body:JSON.stringify({refresh_token:auth.refresh_token})});return auth.access_token}
+// Teacher accounts use Supabase email verification and per-user row level security.
+action('ls-send',async()=>{const email=$('ls-email').value.trim();if(!$('ls-email').checkValidity()||!email)throw Error('أدخلي بريد الحساب.');await req('/auth/v1/otp',{method:'POST',body:JSON.stringify({email,create_user:true})});cloud('راجعي بريدك؛ قد يصلك رمز أو رابط تأكيد حسب إعداد البريد. يمكنك أيضًا إنشاء حساب جديد بكلمة مرور.')});
+action('ls-login',async()=>{rememberAuth(await req('/auth/v1/verify',{method:'POST',body:JSON.stringify({type:'email',email:$('ls-email').value.trim(),token:$('ls-code').value.trim()})}));$('ls-code').value='';cloud('تم الدخول إلى الحساب.')});
+action('ls-password',async()=>{const password=$('ls-pass').value;rememberAuth(await req('/auth/v1/token?grant_type=password',{method:'POST',body:JSON.stringify({email:$('ls-email').value.trim(),password})}));$('ls-pass').value='';cloud('تم الدخول إلى الحساب.')});
+async function token(){if(!auth?.access_token)throw Error('سجلي الدخول أولًا.');if(auth.expires_at*1000<Date.now()+30000)rememberAuth(await req('/auth/v1/token?grant_type=refresh_token',{method:'POST',body:JSON.stringify({refresh_token:auth.refresh_token})}));return auth.access_token}
 action('ls-sync',async()=>{if(!current)throw Error('اختاري درسًا محفوظًا.');const record=current,t=await token(),owner=auth.user.id;await req('/rest/v1/bitaqati_lesson_bank?on_conflict=owner_id,id',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify({id:record.id,owner_id:owner,lesson:record})},t);const got=await req('/rest/v1/bitaqati_lesson_bank?select=lesson&owner_id=eq.'+owner+'&id=eq.'+record.id,{},t);if(got?.[0]?.lesson?.source!==record.source)throw Error('لم تتأكد إعادة قراءة النسخة.');cloud('تأكد حفظ الدرس وإعادة قراءته من حسابك.')});
 action('ls-read',async()=>{const t=await token(),rows=await req('/rest/v1/bitaqati_lesson_bank?select=lesson&owner_id=eq.'+auth.user.id,{},t);let n=0;for(const {lesson:a} of rows){if(!a?.id||!a.title||!Array.isArray(a.quiz)||!a.hats||typeof a.source!=='string')continue;if(!localStorage.getItem(KEY+a.id)){localStorage.setItem(KEY+a.id,JSON.stringify(a));n++}}list(current?.id);cloud('دروس الحساب: '+rows.length+'، أُضيف لهذا الجهاز: '+n+'.')});
-action('ls-out',async()=>{const t=auth?.access_token;auth=null;if(t)await req('/auth/v1/logout',{method:'POST'},t);cloud('تم الخروج.')});
+action('ls-register',async()=>{
+const email=$('ls-email').value.trim(),password=$('ls-pass').value;
+if(!$('ls-email').checkValidity()||!email)throw Error('أدخلي بريدًا إلكترونيًا صحيحًا.');
+if(password.length<8)throw Error('كلمة المرور يجب أن تكون ٨ أحرف على الأقل.');
+const result=await req('/auth/v1/signup',{method:'POST',body:JSON.stringify({email,password})});
+$('ls-pass').value='';
+cloud(rememberAuth(result)?'تم إنشاء الحساب والدخول. يمكنك حفظ البيانات الآن.':'راجعي بريدك لتأكيد الحساب، ثم سجلي الدخول بكلمة المرور.');
+});
+const snapshotKeys={quiz:'bitaqati-v1',learning:'bitaqati-learning-v2'};
+async function getSnapshots(){
+const t=await token();
+return req('/rest/v1/bitaqati_records?select=record_type,record_data&user_id=eq.'+encodeURIComponent(auth.user.id)+'&record_type=in.(snapshot_quiz,snapshot_learning)',{},t);
+}
+action('ls-save-all',async()=>{
+const data=[];
+for(const [kind,key] of Object.entries(snapshotKeys)){
+ const raw=localStorage.getItem(key);if(!raw)continue;
+ let snapshot;try{snapshot=JSON.parse(raw)}catch{throw Error('بيانات '+kind+' غير صالحة؛ نزلي نسخة احتياطية أولًا.')}
+ if(!snapshot||typeof snapshot!=='object'||Array.isArray(snapshot))throw Error('بيانات محلية غير صالحة.');
+ data.push({record_type:'snapshot_'+kind,record_data:{snapshot,saved_at:new Date().toISOString()}});
+}
+if(!data.length)throw Error('لا توجد بيانات جولات محفوظة على هذا الجهاز.');
+if(!confirm('قد تحتوي الجولات على أسماء طالبات وملاحظات خاصة. هل توافقين على حفظها في حساب Supabase الشخصي؟'))return;
+const t=await token();
+for(const record of data)await req('/rest/v1/bitaqati_records?on_conflict=user_id,record_type',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify({...record,user_id:auth.user.id,updated_at:new Date().toISOString()})},t);
+const saved=await getSnapshots();
+if(!data.every(item=>saved.some(row=>row.record_type===item.record_type&&JSON.stringify(row.record_data?.snapshot)===JSON.stringify(item.record_data.snapshot))))throw Error('لم تتأكد إعادة قراءة النسخ؛ نزلي نسخة محلية احتياطية.');
+cloud('تم الحفظ والتحقق سحابيًا لـ '+data.length+' قسم، ويمكن استعادتها من جهاز آخر بعد الدخول.');
+});
+action('ls-read-all',async()=>{
+const rows=await getSnapshots();
+const valid=rows.filter(row=>['snapshot_quiz','snapshot_learning'].includes(row.record_type)&&row.record_data?.snapshot&&typeof row.record_data.snapshot==='object'&&!Array.isArray(row.record_data.snapshot));
+if(!valid.length)throw Error('لا توجد جولات سحابية محفوظة في حسابك بعد.');
+if(!confirm('ستحل نسخ السحابة محل البيانات المناظرة على هذا الجهاز. سننزّل نسخة احتياطية أولًا. هل تريدين الاستعادة؟'))return;
+const previous={saved_at:new Date().toISOString(),quiz:localStorage.getItem(snapshotKeys.quiz),learning:localStorage.getItem(snapshotKeys.learning)};
+const file=URL.createObjectURL(new Blob([JSON.stringify(previous)],{type:'application/json'})),link=document.createElement('a');
+link.href=file;link.download='بطاقتي_نسخة_قبل_الاستعادة_'+new Date().toISOString().slice(0,10)+'.json';document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(file),1500);
+for(const row of valid){const key=snapshotKeys[row.record_type.slice('snapshot_'.length)];if(key)localStorage.setItem(key,JSON.stringify(row.record_data.snapshot));}
+try{sessionStorage.setItem('bitaqati.restored','نجحت استعادة '+valid.length+' قسم من السحابة.')}catch{}
+location.reload();
+});
+try{const status=sessionStorage.getItem('bitaqati.restored');if(status){cloud(status);sessionStorage.removeItem('bitaqati.restored')}else if(auth?.access_token)cloud('حسابك متصل بهذه الجلسة.')}catch{}
+action('ls-out',async()=>{const t=auth?.access_token;auth=null;try{sessionStorage.removeItem('bitaqati.teacher.session')}catch{};if(t)await req('/auth/v1/logout',{method:'POST'},t);cloud('تم الخروج.')});
 })();
 
 </script>
