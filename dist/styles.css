@@ -338,16 +338,16 @@ dialog > .small-note { font-size: .77rem; margin-top: 14px; }
   body > :not(.print-root) { display: none !important; }
   .print-root { display: block !important; width: 190mm; margin: 0; padding: 0; }
   .print-root, .print-root * { color: #000 !important; box-shadow: none !important; text-shadow: none !important; }
-  .card-sheet { display: block; width: 190mm; height: 277mm; margin: 0; padding: 0; break-after: page; page-break-after: always; break-inside: avoid; }
+  .card-sheet { display: grid; grid-template-columns: repeat(2, 95mm); grid-template-rows: repeat(2, 134mm); column-gap: 0; row-gap: 6mm; width: 190mm; height: 274mm; margin: 0; padding: 0; break-after: page; page-break-after: always; break-inside: avoid; page-break-inside: avoid; }
   .card-sheet:last-child { break-after: auto; page-break-after: auto; }
-  .paper-card { display: grid; grid-template-rows: 12mm 100mm 7mm; align-content: center; width: 190mm; height: 132mm; margin: 0 0 8mm; padding: 4mm 6mm; border: .25mm dashed #777; border-radius: 0; background: #fff !important; break-inside: avoid; page-break-inside: avoid; }
+  .paper-card { display: grid; grid-template-rows: 12mm 92mm 7mm; align-content: center; width: 95mm; height: 134mm; min-width: 0; margin: 0; padding: 4mm 3mm; border: .25mm dashed #777; border-radius: 0; background: #fff !important; break-inside: avoid; page-break-inside: avoid; }
   .paper-card:last-child { margin-bottom: 0; }
   .paper-card header { display: flex; flex-wrap: nowrap; align-items: center; gap: 5mm; margin: 0; min-width: 0; }
-  .card-no { font-size: 17pt; line-height: 1.3; }
-  .card-name { font-size: 12pt; line-height: 1.3; overflow-wrap: anywhere; }
-  .marker-wrap { width: 100mm; height: 100mm; aspect-ratio: auto; margin: 0 auto; background: #fff !important; }
-  .marker-code { width: 80mm; height: 80mm; background: #fff !important; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
-  .marker-code svg { display: block; width: 80mm; height: 80mm; max-width: none; overflow: visible; }
-  .edge-letter { width: 8mm; height: 8mm; font-size: 17pt; line-height: 1; }
+  .card-no { font-size: 12pt; line-height: 1.3; }
+  .card-name { font-size: 8pt; line-height: 1.3; overflow-wrap: anywhere; }
+  .marker-wrap { width: 80mm; height: 80mm; aspect-ratio: auto; margin: 0 auto; background: #fff !important; }
+  .marker-code { width: 64mm; height: 64mm; background: #fff !important; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .marker-code svg { display: block; width: 64mm; height: 64mm; max-width: none; overflow: visible; }
+  .edge-letter { width: 7mm; height: 7mm; font-size: 13pt; line-height: 1; }
   .paper-card footer { align-self: center; margin: 0; font-size: 8pt; line-height: 1.5; }
 }
