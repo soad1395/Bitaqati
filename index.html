@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#135d50">
-  <meta name="description" content="بطاقتي: المشاعر والاحتياجات والقبعات الست وأسئلة التقويم، ببطاقات ورقية وكاميرا. أ/ فاطمة هزازي.">
+  <meta name="description" content="بطاقتي: المشاعر والاحتياجات والقبعات الست وأسئلة التقويم، ببطاقات ورقية وكاميرا. أ/ سعاد الغامدي.">
   <title>بطاقتي | المشاعر والقبعات الست</title>
   <style data-source="styles.css">
 @font-face {
@@ -451,7 +451,7 @@ dialog > .small-note { font-size: .77rem; margin-top: 14px; }
       <div class="result-actions"><button type="button" id="csv-btn" class="button secondary">تنزيل النتائج CSV</button><button type="button" id="resume-btn" class="button secondary">استكمال البطاقات غير المقروءة</button><button type="button" id="retry-btn" class="button quiet">محاولة جديدة للسؤال نفسه</button></div>
     </section>
     <div class="app-footer backup-actions"><span>بيانات هذا النموذج تُحفظ في المتصفح المستخدم</span><button id="backup-btn" type="button" class="text-button">تنزيل نسخة احتياطية</button><button id="restore-btn" type="button" class="text-button">استعادة نسخة</button><input type="file" id="backup-input" accept="application/json,.json" hidden></div>
-    <footer class="app-footer"><span>أ/ فاطمة هزازي</span></footer>
+    <footer class="app-footer"><span>أ/ سعاد الغامدي</span></footer>
   </main>
   <main id="student-display" class="student-display" hidden><p class="eyebrow">بطاقتي · شارك بإجابتك</p><h1 id="display-question"></h1><div id="display-options" class="display-options"></div><p class="display-instruction">اختر الإجابة، واجعل حرفها في الأعلى، ثم ارفع بطاقتك.</p><button type="button" id="display-fullscreen" class="button quiet">ملء الشاشة</button></main>
   <dialog id="help-dialog"><div class="dialog-heading"><h2>ابدأ بثلاث بطاقات</h2><button class="button quiet" data-close="help-dialog" aria-label="إغلاق" type="button">×</button></div><ol class="help-list"><li><strong>اطبع بطاقات «بطاقتي».</strong> أعط كل متعلم البطاقة التي تحمل رقمه.</li><li><strong>اكتب السؤال وحدد إجابته.</strong> اختر عدد المتعلمين، ثم اضغط «ابدأ السؤال».</li><li><strong>اعرض السؤال.</strong> افتحه في نافذة العرض أو انسخ رابطه للحاسوب.</li><li><strong>امسح البطاقات.</strong> اقرأ من كاميرا هذا الجهاز، أو من صورة تلتقطها.</li><li><strong>راجع النتائج.</strong> ناقش الاختيارات، ثم نزّل النتائج أو انتقل إلى سؤال جديد.</li></ol><p>الحروف المطبوعة: أ، ب، ج، د. الحرف الموجود في الأعلى يحدد الاختيار. وجّه الرمز الأسود إلى الكاميرا.</p><p class="small-note">هذا نموذج أولي. اختبر ثلاث بطاقات تحت إضاءة فصلك قبل التوسع. عرض السؤال على جهاز آخر لا يزامن النتائج بين الجهازين.</p><p class="small-note">لا تُرسل صور الكاميرا إلى خادم. احتفظ بنسخة احتياطية؛ فقد يؤدي مسح بيانات المتصفح إلى فقدان السجل المحلي.</p><button type="button" data-close="help-dialog" class="button primary">فهمت، ابدأ</button></dialog>
@@ -465,7 +465,7 @@ dialog > .small-note { font-size: .77rem; margin-top: 14px; }
 'use strict';
 const $=id=>document.getElementById(id), nav=$('learning-nav'); if(!nav){if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});return}if(location.hash.includes('display')||new URLSearchParams(location.search).has('display'))return;
 const box=document.createElement('details');box.className='panel';box.style.cssText='max-width:1050px;margin:12px auto;padding:16px';
-box.innerHTML='<summary><strong>دروسي | رفع كتاب وتوليد أسئلة البليكرز والقبعات الست</strong></summary><div style="display:grid;gap:10px"><label>ارفعي كتابًا نصيًا PDF أو Word (.docx) أو TXT<input id="ls-file" type="file" accept=".pdf,.docx,.txt"></label><label>اختاري الدرس أو الصفحة<select id="ls-part"></select></label><label>عنوان الدرس<input id="ls-title" maxlength="100"></label><label>راجعي نص الدرس أو الصقيه هنا<textarea id="ls-source" rows="6"></textarea></label><button type="button" class="button primary" id="ls-go">✨ ولّدي أسئلة من نص الدرس واحفظيها</button><div role="status" id="ls-msg"></div><label>دروسي المحفوظة<select id="ls-bank"></select></label><div id="ls-items"></div><details><summary>حفظ دروسي في حسابي واستعادتها</summary><label>بريد المعلمة<input type="email" id="ls-email"></label><button id="ls-send" type="button">إرسال رمز الدخول</button><label>أو كلمة مرور حساب بطاقتي<input id="ls-pass" type="password" autocomplete="current-password"></label><button type="button" id="ls-password">دخول بكلمة المرور</button><label>رمز البريد<input id="ls-code" inputmode="numeric"></label><button id="ls-login" type="button">دخول</button> <button id="ls-sync" type="button">حفظ الدرس المختار في حسابي</button> <button id="ls-read" type="button">استعادة دروسي من الحساب</button> <button id="ls-out" type="button">خروج</button><p id="ls-cloud" role="status"></p></details></div>';
+box.innerHTML='<summary><strong>دروسي | رفع كتاب وتوليد البليكرز والقبعات الست</strong></summary><div style="display:grid;gap:10px"><label>ارفعي كتابًا نصيًا PDF أو Word (.docx) أو TXT<input id="ls-file" type="file" accept=".pdf,.docx,.txt"></label><label>اختاري الدرس أو الصفحة<select id="ls-part"></select></label><label>عنوان الدرس<input id="ls-title" maxlength="100"></label><label>راجعي نص الدرس أو الصقيه هنا<textarea id="ls-source" rows="6"></textarea></label><button type="button" class="button primary" id="ls-go">ولّدي النشاطين واحفظيهما على هذا الجهاز</button><div role="status" id="ls-msg"></div><label>دروسي المحفوظة<select id="ls-bank"></select></label><div id="ls-items"></div><details><summary>حفظ دروسي في حسابي واستعادتها</summary><label>بريد المعلمة<input type="email" id="ls-email"></label><button id="ls-send" type="button">إرسال رمز الدخول</button><label>أو كلمة مرور حساب بطاقتي<input id="ls-pass" type="password" autocomplete="current-password"></label><button type="button" id="ls-password">دخول بكلمة المرور</button><label>رمز البريد<input id="ls-code" inputmode="numeric"></label><button id="ls-login" type="button">دخول</button> <button id="ls-sync" type="button">حفظ الدرس المختار في حسابي</button> <button id="ls-read" type="button">استعادة دروسي من الحساب</button> <button id="ls-out" type="button">خروج</button><p id="ls-cloud" role="status"></p><p class="small-note">لأول استخدام: أنشئي حسابك ببريد إلكتروني وكلمة مرور، ثم أكّدي البريد إذا طُلِب. الحفظ السحابي خاص بحسابك.</p><button id="ls-register" type="button" class="button secondary">إنشاء حساب معلمة جديد</button><hr><p><strong>حفظ نتائج البطاقات والجولات</strong></p><button id="ls-save-all" type="button" class="button secondary">حفظ جميع جولات هذا الجهاز سحابيًا</button> <button id="ls-read-all" type="button" class="button secondary">استعادة الجولات من حسابي</button><p class="small-note">قد تتضمن الجولات أسماء طالبات أو ملاحظات خاصة؛ لا تحفظيها سحابيًا إلا وفق سياسة المدرسة. قبل الاستعادة ستُنَزَّل نسخة محلية احتياطية.</p></details></div>';
 nav.after(box);
 const msg=(s)=>$('ls-msg').textContent=s, cloud=s=>$('ls-cloud').textContent=s, KEY='bitaqati.lesson.v1:', letters='ABCD', hats={white:'البيضاء',red:'الحمراء',black:'السوداء',yellow:'الصفراء',green:'الخضراء',blue:'الزرقاء'};
 let parts=[],current=null,loadId=0;
@@ -484,61 +484,65 @@ if(ext==='docx'){const z=await import('https://cdn.jsdelivr.net/npm/jszip@3.10.1
 if(ext==='pdf'){const lib=await import('https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/legacy/build/pdf.min.mjs');lib.GlobalWorkerOptions.workerSrc='https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/legacy/build/pdf.worker.min.mjs';const doc=await lib.getDocument({data:await f.arrayBuffer(),isEvalSupported:false}).promise;const pages=[];try{for(let n=1;n<=doc.numPages;n++){const p=await doc.getPage(n), c=await p.getTextContent();const source=c.items.map(t=>(t.str||'')+(t.hasEOL?'\n':' ')).join('').trim();if(source)pages.push({title:'صفحة '+n,source});p.cleanup()}}finally{await doc.destroy()}const lessons=group(pages.flatMap(p=>p.source.split('\n'))).filter(p=>p.title!=='نص الدرس');return [...lessons,...pages]}throw Error('اختاري PDF أو DOCX أو TXT.')}
 $('ls-part').onchange=()=>{const p=parts[Number($('ls-part').value)];if(p){$('ls-title').value=p.title;$('ls-source').value=p.source}};
 $('ls-file').onchange=async()=>{const f=$('ls-file').files[0];if(!f)return;const n=++loadId;parts=[];$('ls-part').replaceChildren();$('ls-source').value='';$('ls-title').value='';$('ls-go').disabled=true;msg('جارٍ استخراج النص…');try{const p=await parse(f);if(n!==loadId)return;if(!p.length)throw Error('لم يظهر نص قابل للاستخراج؛ الصقي نص الدرس إذا كان الملف مصوّرًا.');parts=p;for(let i=0;i<p.length;i++)option($('ls-part'),p[i].title,''+i);$('ls-part').onchange();msg('اختاري الدرس وراجعي النص قبل التوليد.')}catch(e){if(n===loadId)msg('لم يكتمل استخراج النص. يمكنك لصقه مباشرة. '+e.message)}finally{if(n===loadId)$('ls-go').disabled=false}};
-function make(title,source){
-const sentences=[...new Set(source.replace(/\s+/g,' ').split(/[.!؟؛\n]+/).map(v=>v.trim()).filter(v=>v.length>=20&&v.length<=300))];
-const words=t=>t.match(/[\p{L}\p{M}]{4,}/gu)||[];
-const stop=new Set('الذي التي الذين اللواتي هذا هذه هناك كانت يكون تكون خلال عندما بينما وكذلك وذلك كذلك عليه عليها منهم منها هناك فقط حيث فإن لأنه بأنها التي التعليم الدرس الطلاب الطالبات المعلمة الكلمات المعلومات'.split(' '));
-const pool=[...new Set(words(source))].filter(w=>!stop.has(w)&&w.length<35);
-const quiz=[],seen=new Set();
-for(const line of sentences){
-const terms=[...new Set(words(line))].filter(w=>pool.includes(w)&&!seen.has(w)&&line.split(w).length===2).sort((a,b)=>b.length-a.length);
-const term=terms[0];if(!term)continue;
-const alternatives=pool.filter(w=>w!==term&&!line.includes(w)&&Math.abs(w.length-term.length)<=Math.max(5,term.length)).sort((a,b)=>Math.abs(a.length-term.length)-Math.abs(b.length-term.length));
-if(alternatives.length<3)continue;
-const key=quiz.length%4,choices=alternatives.slice(0,3);choices.splice(key,0,term);
-quiz.push({text:'وفقًا للدرس، أكملي العبارة: «'+line.replace(term,'ــــــ')+'»',choices,key});seen.add(term);
-if(quiz.length>=10)break;
-}
-if(!quiz.length)throw Error('لم أستطع استخراج سؤال موثوق من هذا النص. جرّبي درسًا يحتوي على فقرات واضحة أو الصقي نص الدرس.');
-const anchor=(sentences[0]||source).slice(0,130);
-const hats={white:'استخرجي معلومتين من العبارة: «'+anchor+'».',red:'ما شعورك تجاه فكرة من درس «'+title+'»؟ ولماذا؟',black:'ما المخاطر أو الأخطاء التي قد تحدث عند تطبيق هذه الفكرة؟',yellow:'اذكري فائدتين عمليتين لما تعلمتِه من «'+title+'».',green:'اقترحي تطبيقًا إبداعيًا جديدًا لفكرة من «'+title+'».',blue:'لخّصي الفكرة الرئيسة وحددي خطوتين لتطبيقها.'};
-return {id:crypto.randomUUID(),title,source,quiz,hats,generatedBy:'extractive-text-questions',createdAt:new Date().toISOString()};
-}
-$('ls-go').onclick=async()=>{
-const button=$('ls-go');button.disabled=true;
-try{const t=$('ls-title').value.trim(),source=$('ls-source').value.trim();if(!t||!source)throw Error('اكتبي عنوان الدرس ونصه أولًا.');if(source.length>120000)throw Error('اختاري درسًا واحدًا بدل الكتاب كاملًا.');
-const a=make(t,source);localStorage.setItem(KEY+a.id,JSON.stringify(a));list(a.id);render(a);
-if(auth?.access_token){try{await saveLessonCloud(a);msg('تم توليد '+a.quiz.length+' أسئلة من النص وحفظ الدرس محليًا وفي حسابك السحابي. راجعي الأسئلة قبل استخدامها.')}catch(e){msg('تم حفظ الدرس محليًا، لكن لم يكتمل الحفظ السحابي: '+e.message)}}
-else msg('تم توليد '+a.quiz.length+' أسئلة من النص وحفظها على هذا الجهاز. لتظهر في الأجهزة الأخرى سجلي الدخول من قسم حفظ دروسي في حسابي.');
-}catch(e){msg('لم يُحفظ درس جديد: '+e.message)}finally{button.disabled=false}
-};
+function make(title,source){const lines=[...new Set(source.split(/[.!؟؛\n]+/).map(s=>s.trim()).filter(s=>s.length>=12&&s.length<=330))];
+const words=s=>s.match(/[\p{L}\p{M}]{3,}/gu)||[], stop=new Set('التي الذي الذين التي هذه هذا على إلى عند بعد كان تكون بين ومن وفي كما غير ذلك حيث وهي وهو خلال فقط'.split(' '));const pool=[...new Set(words(source))].filter(w=>!stop.has(w)&&w.length<45);
+const quiz=[];for(const l of lines){const term=words(l).filter(w=>pool.includes(w)&&l.split(w).length===2).sort((a,b)=>b.length-a.length)[0];if(!term)continue;const others=pool.filter(w=>!l.includes(w)).slice(0,3);if(others.length<3)continue;const key=quiz.length%4;others.splice(key,0,term);quiz.push({text:'بحسب نص الدرس، ما الكلمة الناقصة؟ «'+l.replace(term,'ــــ')+'»',choices:others,key});if(quiz.length===6)break}if(!quiz.length)throw Error('أضيفي فقرتين واضحتين من شرح الدرس بكلمات متنوعة لتكوين أربعة خيارات منه.');
+const anchor=lines[0].slice(0,140);const h={white:'ما المعلومة التي تقدمها العبارة: «'+anchor+'»؟',red:'ما شعورك تجاه الفكرة الواردة في «'+title+'»؟',black:'ما الخطأ المحتمل عند تطبيق فكرة «'+title+'» دون فهم سياقها؟',yellow:'ما فائدة تطبيق ما تعلمتِه من «'+title+'»؟',green:'اقترحي موقفًا جديدًا يوضح فكرة من «'+title+'».',blue:'لخّصي «'+title+'» في خطوتين واذكري ما تحتاجين إلى مراجعته.'};return {id:crypto.randomUUID(),title,source,quiz,hats:h}}
+$('ls-go').onclick=()=>{try{const t=$('ls-title').value.trim(),s=$('ls-source').value.trim();if(!t||!s)throw Error('اكتبي عنوان الدرس ونصه أولًا.');if(s.length>120000)throw Error('اختاري درسًا واحدًا بدل الكتاب كاملًا.');const a=make(t,s);localStorage.setItem(KEY+a.id,JSON.stringify(a));list(a.id);render(a);msg('حُفظ على هذا الجهاز. اختاري سؤالًا لفتحه في النشاط ومراجعته.')}catch(e){msg('لم يُحفظ درس جديد: '+e.message)}};
 try{list()}catch{msg('التخزين غير متاح في هذا المتصفح.')}
-const url='https://tkxksbbujmsuudguxiiv.supabase.co', pub='sb_publishable_7wpYQQP8VlZvTQBEvdFz3w_x7Rw5UGV';let auth=null;
+const url='https://tkxksbbujmsuudguxiiv.supabase.co', pub='sb_publishable_7wpYQQP8VlZvTQBEvdFz3w_x7Rw5UGV';let auth=null;try{auth=JSON.parse(sessionStorage.getItem('bitaqati.teacher.session')||'null')}catch{};function rememberAuth(data){if(data?.access_token&&data?.refresh_token){auth=data;try{sessionStorage.setItem('bitaqati.teacher.session',JSON.stringify(auth))}catch{};return true}return false}
 async function req(path,options={},token){const r=await fetch(url+path,{...options,headers:{'Content-Type':'application/json',apikey:pub,...(token?{Authorization:'Bearer '+token}:{}),...options.headers}});const raw=await r.text();let data;try{data=JSON.parse(raw)}catch{}if(!r.ok)throw Error(data?.msg||data?.message||'تعذر الاتصال بالحساب.');return data}
 function action(id,fn){$(id).onclick=async()=>{const b=$(id);b.disabled=true;try{await fn()}catch(e){cloud('لم تكتمل العملية: '+e.message)}finally{b.disabled=false}}}
-// Verified teacher accounts only; do not create accounts from the public page.
-action('ls-send',async()=>{const email=$('ls-email').value.trim();if(!$('ls-email').checkValidity()||!email)throw Error('أدخلي بريد الحساب.');await req('/auth/v1/otp',{method:'POST',body:JSON.stringify({email,create_user:false})});cloud('راجعي بريد حسابك المسجّل. يلزم رمز الدخول من رسالة المشروع.')});
-action('ls-login',async()=>{auth=await req('/auth/v1/verify',{method:'POST',body:JSON.stringify({type:'email',email:$('ls-email').value.trim(),token:$('ls-code').value.trim()})});$('ls-code').value='';cloud('تم الدخول إلى الحساب. جارٍ مزامنة الدروس…');try{await syncLessonsOnLogin()}catch(e){cloud('تم الدخول، وتعذرت المزامنة: '+e.message)}});
-action('ls-password',async()=>{const password=$('ls-pass').value;auth=await req('/auth/v1/token?grant_type=password',{method:'POST',body:JSON.stringify({email:$('ls-email').value.trim(),password})});$('ls-pass').value='';cloud('تم الدخول إلى الحساب. جارٍ مزامنة الدروس…');try{await syncLessonsOnLogin()}catch(e){cloud('تم الدخول، وتعذرت المزامنة: '+e.message)}});
-async function token(){if(!auth?.access_token)throw Error('سجلي الدخول أولًا.');if(auth.expires_at*1000<Date.now()+30000)auth=await req('/auth/v1/token?grant_type=refresh_token',{method:'POST',body:JSON.stringify({refresh_token:auth.refresh_token})});return auth.access_token}
-async function saveLessonCloud(record){
-const t=await token(),owner=auth.user.id;
-await req('/rest/v1/bitaqati_lesson_bank?on_conflict=owner_id,id',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify({id:record.id,owner_id:owner,lesson:record})},t);
-const rows=await req('/rest/v1/bitaqati_lesson_bank?select=lesson&owner_id=eq.'+owner+'&id=eq.'+record.id,{},t);
-if(rows?.[0]?.lesson?.source!==record.source)throw Error('تعذر التحقق من النسخة السحابية.');
-}
-async function syncLessonsOnLogin(){
-const t=await token(),owner=auth.user.id;
-const rows=await req('/rest/v1/bitaqati_lesson_bank?select=lesson&owner_id=eq.'+owner,{},t);
-const ids=new Set();
-let imported=0,uploaded=0;
-for(const {lesson} of rows){if(!lesson||typeof lesson.id!=='string')continue;ids.add(lesson.id);if(!localStorage.getItem(KEY+lesson.id)){localStorage.setItem(KEY+lesson.id,JSON.stringify(lesson));imported++}}
-for(const key of Object.keys(localStorage).filter(k=>k.startsWith(KEY))){const id=key.slice(KEY.length);if(ids.has(id))continue;try{const lesson=JSON.parse(localStorage.getItem(key));if(!lesson||lesson.id!==id)continue;await saveLessonCloud(lesson);uploaded++}catch(e){cloud('فشل رفع بعض الدروس إلى السحابة: '+e.message);break}}
-list(current?.id);cloud('تمت مزامنة الدروس: استعادة '+imported+' ورفع '+uploaded+'.');
-}
+// Teacher accounts use Supabase email verification and per-user row level security.
+action('ls-send',async()=>{const email=$('ls-email').value.trim();if(!$('ls-email').checkValidity()||!email)throw Error('أدخلي بريد الحساب.');await req('/auth/v1/otp',{method:'POST',body:JSON.stringify({email,create_user:true})});cloud('راجعي بريدك؛ قد يصلك رمز أو رابط تأكيد حسب إعداد البريد. يمكنك أيضًا إنشاء حساب جديد بكلمة مرور.')});
+action('ls-login',async()=>{rememberAuth(await req('/auth/v1/verify',{method:'POST',body:JSON.stringify({type:'email',email:$('ls-email').value.trim(),token:$('ls-code').value.trim()})}));$('ls-code').value='';cloud('تم الدخول إلى الحساب.')});
+action('ls-password',async()=>{const password=$('ls-pass').value;rememberAuth(await req('/auth/v1/token?grant_type=password',{method:'POST',body:JSON.stringify({email:$('ls-email').value.trim(),password})}));$('ls-pass').value='';cloud('تم الدخول إلى الحساب.')});
+async function token(){if(!auth?.access_token)throw Error('سجلي الدخول أولًا.');if(auth.expires_at*1000<Date.now()+30000)rememberAuth(await req('/auth/v1/token?grant_type=refresh_token',{method:'POST',body:JSON.stringify({refresh_token:auth.refresh_token})}));return auth.access_token}
 action('ls-sync',async()=>{if(!current)throw Error('اختاري درسًا محفوظًا.');const record=current,t=await token(),owner=auth.user.id;await req('/rest/v1/bitaqati_lesson_bank?on_conflict=owner_id,id',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify({id:record.id,owner_id:owner,lesson:record})},t);const got=await req('/rest/v1/bitaqati_lesson_bank?select=lesson&owner_id=eq.'+owner+'&id=eq.'+record.id,{},t);if(got?.[0]?.lesson?.source!==record.source)throw Error('لم تتأكد إعادة قراءة النسخة.');cloud('تأكد حفظ الدرس وإعادة قراءته من حسابك.')});
 action('ls-read',async()=>{const t=await token(),rows=await req('/rest/v1/bitaqati_lesson_bank?select=lesson&owner_id=eq.'+auth.user.id,{},t);let n=0;for(const {lesson:a} of rows){if(!a?.id||!a.title||!Array.isArray(a.quiz)||!a.hats||typeof a.source!=='string')continue;if(!localStorage.getItem(KEY+a.id)){localStorage.setItem(KEY+a.id,JSON.stringify(a));n++}}list(current?.id);cloud('دروس الحساب: '+rows.length+'، أُضيف لهذا الجهاز: '+n+'.')});
-action('ls-out',async()=>{const t=auth?.access_token;auth=null;if(t)await req('/auth/v1/logout',{method:'POST'},t);cloud('تم الخروج.')});
+action('ls-register',async()=>{
+const email=$('ls-email').value.trim(),password=$('ls-pass').value;
+if(!$('ls-email').checkValidity()||!email)throw Error('أدخلي بريدًا إلكترونيًا صحيحًا.');
+if(password.length<8)throw Error('كلمة المرور يجب أن تكون ٨ أحرف على الأقل.');
+const result=await req('/auth/v1/signup',{method:'POST',body:JSON.stringify({email,password})});
+$('ls-pass').value='';
+cloud(rememberAuth(result)?'تم إنشاء الحساب والدخول. يمكنك حفظ البيانات الآن.':'راجعي بريدك لتأكيد الحساب، ثم سجلي الدخول بكلمة المرور.');
+});
+const snapshotKeys={quiz:'bitaqati-v1',learning:'bitaqati-learning-v2'};
+async function getSnapshots(){
+const t=await token();
+return req('/rest/v1/bitaqati_records?select=record_type,record_data&user_id=eq.'+encodeURIComponent(auth.user.id)+'&record_type=in.(snapshot_quiz,snapshot_learning)',{},t);
+}
+action('ls-save-all',async()=>{
+const data=[];
+for(const [kind,key] of Object.entries(snapshotKeys)){
+ const raw=localStorage.getItem(key);if(!raw)continue;
+ let snapshot;try{snapshot=JSON.parse(raw)}catch{throw Error('بيانات '+kind+' غير صالحة؛ نزلي نسخة احتياطية أولًا.')}
+ if(!snapshot||typeof snapshot!=='object'||Array.isArray(snapshot))throw Error('بيانات محلية غير صالحة.');
+ data.push({record_type:'snapshot_'+kind,record_data:{snapshot,saved_at:new Date().toISOString()}});
+}
+if(!data.length)throw Error('لا توجد بيانات جولات محفوظة على هذا الجهاز.');
+if(!confirm('قد تحتوي الجولات على أسماء طالبات وملاحظات خاصة. هل توافقين على حفظها في حساب Supabase الشخصي؟'))return;
+const t=await token();
+for(const record of data)await req('/rest/v1/bitaqati_records?on_conflict=user_id,record_type',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify({...record,user_id:auth.user.id,updated_at:new Date().toISOString()})},t);
+const saved=await getSnapshots();
+if(!data.every(item=>saved.some(row=>row.record_type===item.record_type&&JSON.stringify(row.record_data?.snapshot)===JSON.stringify(item.record_data.snapshot))))throw Error('لم تتأكد إعادة قراءة النسخ؛ نزلي نسخة محلية احتياطية.');
+cloud('تم الحفظ والتحقق سحابيًا لـ '+data.length+' قسم، ويمكن استعادتها من جهاز آخر بعد الدخول.');
+});
+action('ls-read-all',async()=>{
+const rows=await getSnapshots();
+const valid=rows.filter(row=>['snapshot_quiz','snapshot_learning'].includes(row.record_type)&&row.record_data?.snapshot&&typeof row.record_data.snapshot==='object'&&!Array.isArray(row.record_data.snapshot));
+if(!valid.length)throw Error('لا توجد جولات سحابية محفوظة في حسابك بعد.');
+if(!confirm('ستحل نسخ السحابة محل البيانات المناظرة على هذا الجهاز. سننزّل نسخة احتياطية أولًا. هل تريدين الاستعادة؟'))return;
+const previous={saved_at:new Date().toISOString(),quiz:localStorage.getItem(snapshotKeys.quiz),learning:localStorage.getItem(snapshotKeys.learning)};
+const file=URL.createObjectURL(new Blob([JSON.stringify(previous)],{type:'application/json'})),link=document.createElement('a');
+link.href=file;link.download='بطاقتي_نسخة_قبل_الاستعادة_'+new Date().toISOString().slice(0,10)+'.json';document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(file),1500);
+for(const row of valid){const key=snapshotKeys[row.record_type.slice('snapshot_'.length)];if(key)localStorage.setItem(key,JSON.stringify(row.record_data.snapshot));}
+try{sessionStorage.setItem('bitaqati.restored','نجحت استعادة '+valid.length+' قسم من السحابة.')}catch{}
+location.reload();
+});
+try{const status=sessionStorage.getItem('bitaqati.restored');if(status){cloud(status);sessionStorage.removeItem('bitaqati.restored')}else if(auth?.access_token)cloud('حسابك متصل بهذه الجلسة.')}catch{}
+action('ls-out',async()=>{const t=auth?.access_token;auth=null;try{sessionStorage.removeItem('bitaqati.teacher.session')}catch{};if(t)await req('/auth/v1/logout',{method:'POST'},t);cloud('تم الخروج.')});
 })();
 
 </script>
@@ -2639,7 +2643,7 @@ AR.Detector.prototype.rotate2 = function (src, rotation) {
       <section class="panel comparison-panel" id="learn-comparison" hidden></section>
       <div class="result-actions"><button type="button" class="button primary" id="learn-next-round">جولة متابعة بعد النشاط</button><button type="button" class="button secondary" id="learn-session-history">سجل الجولات</button><button type="button" class="button quiet" id="learn-back-settings">إعدادات القسم</button></div>
     </section>
-    <footer class="app-footer"><span>أ/ فاطمة هزازي</span></footer>
+    <footer class="app-footer"><span>أ/ سعاد الغامدي</span></footer>
     <canvas id="learn-work" hidden></canvas>
   `;
   const dialog=document.createElement('dialog');dialog.id='learning-dialog';dialog.innerHTML='<div class="dialog-heading"><h2 id="learning-dialog-title"></h2><button type="button" class="button quiet" id="learning-dialog-close" aria-label="إغلاق">×</button></div><div id="learning-dialog-body"></div>';document.body.append(dialog);
@@ -2658,7 +2662,7 @@ AR.Detector.prototype.rotate2 = function (src, rotation) {
     if(data.mode==='hats'&&!keys.includes(data.hatKey))throw new Error('قبعة عرض غير صالحة.');
     $('teacher-app').hidden=true;root.hidden=true;nav.hidden=true;document.querySelector('.app-header').hidden=true;display.hidden=false;
     const choices=data.mode==='hats'?data.choices.filter(c=>c.key===data.hatKey):data.choices;
-    display.innerHTML=`<p class="eyebrow">بطاقتي · ${titleOf(data.mode)}</p><h1>${esc(data.title)}</h1><h2>${esc(data.prompt)}</h2><div class="display-learning-cards ${data.mode==='hats'?'single-hat':''}">${choices.map(c=>`<article class="display-learning-card" style="--signal:${C.COLORS[c.key]}">${data.mode==='hats'?hatIcon(C.COLORS[c.key]):`<span class="display-dot" style="background:${C.COLORS[c.key]}" aria-hidden="true"></span>`}<h3>${esc(c.label)}</h3><p>${esc(c.hint)}</p></article>`).join('')}</div><p class="display-instruction">${data.mode==='feelings'?'اختر ما ترغب في التعبير عنه، وارفع بطاقة واحدة. يمكنك عدم المشاركة الآن.':'فكّر في السؤال مع المجموعة، ثم ارفع بطاقة القبعة الحالية إذا رغبت في المشاركة.'}</p><button type="button" class="button secondary" id="learning-fullscreen">ملء الشاشة</button><footer>أ/ فاطمة هزازي</footer>`;
+    display.innerHTML=`<p class="eyebrow">بطاقتي · ${titleOf(data.mode)}</p><h1>${esc(data.title)}</h1><h2>${esc(data.prompt)}</h2><div class="display-learning-cards ${data.mode==='hats'?'single-hat':''}">${choices.map(c=>`<article class="display-learning-card" style="--signal:${C.COLORS[c.key]}">${data.mode==='hats'?hatIcon(C.COLORS[c.key]):`<span class="display-dot" style="background:${C.COLORS[c.key]}" aria-hidden="true"></span>`}<h3>${esc(c.label)}</h3><p>${esc(c.hint)}</p></article>`).join('')}</div><p class="display-instruction">${data.mode==='feelings'?'اختر ما ترغب في التعبير عنه، وارفع بطاقة واحدة. يمكنك عدم المشاركة الآن.':'فكّر في السؤال مع المجموعة، ثم ارفع بطاقة القبعة الحالية إذا رغبت في المشاركة.'}</p><button type="button" class="button secondary" id="learning-fullscreen">ملء الشاشة</button><footer>أ/ سعاد الغامدي</footer>`;
     $('learning-fullscreen').addEventListener('click',()=>document.documentElement.requestFullscreen?.().catch(()=>{}));
   }
   if(location.hash.startsWith('#show=')){root.hidden=true;nav.hidden=true;return;}
@@ -2793,7 +2797,7 @@ AR.Detector.prototype.rotate2 = function (src, rotation) {
   function displayUrl(){const s=current();if(!s)return;const data={v:2,mode:s.mode,title:s.title,prompt:s.prompt,hatKey:s.hatKey,choices:s.choices.map(({key,label,hint})=>({key,label,hint}))};const url=new URL(location.href);url.hash='learn='+encodeURIComponent(encode(data));return url.href;}
   async function copyDisplay(){const url=displayUrl();if(!url)return;try{await navigator.clipboard.writeText(url);notify('نُسخ رابط التعليمات. لا يحتوي أسماء أو مشاعر فردية، ولا يزامن النتائج.');}catch{modal('رابط عرض المتعلمين',`<p>انسخ الرابط من الحقل التالي. يُعرض المحتوى فقط على الجهاز الآخر.</p><textarea rows="4" readonly id="learning-copy-link">${esc(url)}</textarea>`);$('learning-copy-link').select();}}
   function openDisplay(){const url=displayUrl();if(!url)return;const opened=window.open(url,'_blank','noopener');if(!opened)notify('إذا لم تفتح نافذة العرض، استخدم «انسخ رابط العرض».');}
-  function cardHtml(s,c,cardMode,settings){return `<section class="learning-paper-card" style="--signal:${c.color}"><header><span>${cardMode==='feelings'?'مشاعري واحتياجي':'القبعات الست'}</span><strong>المتعلم ${C.ar(s.id)}</strong></header><div class="learning-paper-body"><div class="learning-paper-text">${cardMode==='hats'?hatIcon(c.color):`<span class="paper-color" style="background:${c.color}" aria-hidden="true">${esc(c.symbol||'')}</span>`}<span class="paper-color-label">${cardMode==='hats'?'القبعة ':''}${esc(c.name)}</span><h2>${esc(c.label)}</h2><p>${esc(c.hint)}</p>${s.name?`<span class="paper-name">${esc(s.name)}</span>`:''}</div><div class="learning-paper-marker">${V.markerSvg(cardMode,s.id,c.key)}</div></div><footer>أ/ فاطمة هزازي</footer></section>`;}
+  function cardHtml(s,c,cardMode,settings){return `<section class="learning-paper-card" style="--signal:${c.color}"><header><span>${cardMode==='feelings'?'مشاعري واحتياجي':'القبعات الست'}</span><strong>المتعلم ${C.ar(s.id)}</strong></header><div class="learning-paper-body"><div class="learning-paper-text">${cardMode==='hats'?hatIcon(c.color):`<span class="paper-color" style="background:${c.color}" aria-hidden="true">${esc(c.symbol||'')}</span>`}<span class="paper-color-label">${cardMode==='hats'?'القبعة ':''}${esc(c.name)}</span><h2>${esc(c.label)}</h2><p>${esc(c.hint)}</p>${s.name?`<span class="paper-name">${esc(s.name)}</span>`:''}</div><div class="learning-paper-marker">${V.markerSvg(cardMode,s.id,c.key)}</div></div><footer>أ/ سعاد الغامدي</footer></section>`;}
   function showPrint(){
     try{saveSettings();}catch(e){notify(e.message,'error');return;}
     const n=state.settings.count;
