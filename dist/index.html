@@ -158,11 +158,30 @@ async function req(path,options={},token){const r=await fetch(url+path,{...optio
 function action(id,fn){$(id).onclick=async()=>{const b=$(id);b.disabled=true;try{await fn()}catch(e){cloud('لم تكتمل العملية: '+e.message)}finally{b.disabled=false}}}
 // Teacher accounts use Supabase email verification and per-user row level security.
 action('ls-send',async()=>{const email=$('ls-email').value.trim();if(!$('ls-email').checkValidity()||!email)throw Error('أدخلي بريد الحساب.');await req('/auth/v1/otp',{method:'POST',body:JSON.stringify({email,create_user:true})});cloud('راجعي بريدك؛ قد يصلك رمز أو رابط تأكيد حسب إعداد البريد. يمكنك أيضًا إنشاء حساب جديد بكلمة مرور.')});
-action('ls-login',async()=>{if(!rememberAuth(await req('/auth/v1/verify',{method:'POST',body:JSON.stringify({type:'email',email:$('ls-email').value.trim(),token:$('ls-code').value.trim()})})))throw Error('لم يكتمل التحقق من الحساب.');$('ls-code').value='';cloud('تم الدخول إلى الحساب. اضغطي استعادة دروسي لفتحها من أي جهاز.')});
-action('ls-password',async()=>{const password=$('ls-pass').value;if(!rememberAuth(await req('/auth/v1/token?grant_type=password',{method:'POST',body:JSON.stringify({email:$('ls-email').value.trim(),password})})))throw Error('لم يكتمل الدخول.');$('ls-pass').value='';cloud('تم الدخول إلى الحساب. اضغطي استعادة دروسي لفتحها من أي جهاز.')});
+action('ls-login',async()=>{if(!rememberAuth(await req('/auth/v1/verify',{method:'POST',body:JSON.stringify({type:'email',email:$('ls-email').value.trim(),token:$('ls-code').value.trim()})})))throw Error('لم يكتمل التحقق من الحساب.');$('ls-code').value='';await syncLessonsOnLogin()});
+action('ls-password',async()=>{const password=$('ls-pass').value;if(!rememberAuth(await req('/auth/v1/token?grant_type=password',{method:'POST',body:JSON.stringify({email:$('ls-email').value.trim(),password})})))throw Error('لم يكتمل الدخول.');$('ls-pass').value='';await syncLessonsOnLogin()});
 async function token(){if(!auth?.access_token)throw Error('سجلي الدخول أولًا.');if(!auth.expires_at||auth.expires_at*1000<Date.now()+30000)rememberAuth(await req('/auth/v1/token?grant_type=refresh_token',{method:'POST',body:JSON.stringify({refresh_token:auth.refresh_token})}));return auth.access_token}
 async function saveLessonCloud(record){const t=await token(),owner=auth.user.id;await req('/rest/v1/bitaqati_lesson_bank?on_conflict=owner_id,id',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify({id:record.id,owner_id:owner,lesson:record})},t);const got=await req('/rest/v1/bitaqati_lesson_bank?select=lesson&owner_id=eq.'+owner+'&id=eq.'+record.id,{},t);if(got?.[0]?.lesson?.source!==record.source)throw Error('لم تتأكد إعادة قراءة النسخة.')}
 action('ls-sync',async()=>{if(!current)throw Error('اختاري درسًا محفوظًا.');await saveLessonCloud(current);cloud('تأكد حفظ الدرس وإعادة قراءته من حسابك.')});
+async function syncLessonsOnLogin(){
+let uploaded=0,downloaded=0;
+try{
+  for(const key of Object.keys(localStorage).filter(k=>k.startsWith(KEY))){
+    let lesson;try{lesson=JSON.parse(localStorage.getItem(key)||'null')}catch{continue}
+    if(!lesson?.id||!lesson.title||!Array.isArray(lesson.quiz)||!lesson.hats||typeof lesson.source!=='string')continue;
+    await saveLessonCloud(lesson);uploaded++;
+  }
+  const t=await token();
+  const rows=await req('/rest/v1/bitaqati_lesson_bank?select=lesson&owner_id=eq.'+encodeURIComponent(auth.user.id),{},t);
+  for(const row of rows){
+    const lesson=row.lesson;
+    if(!lesson?.id||!lesson.title||!Array.isArray(lesson.quiz)||!lesson.hats||typeof lesson.source!=='string')continue;
+    if(!localStorage.getItem(KEY+lesson.id)){localStorage.setItem(KEY+lesson.id,JSON.stringify(lesson));downloaded++;}
+  }
+  list(current?.id);
+  cloud('المزامنة ناجحة: رُفعت '+uploaded+' دروس من هذا الجهاز، واستعيد '+downloaded+' درس من حسابك.');
+}catch(e){cloud('تم تسجيل الدخول؛ تعذرت مزامنة بعض الدروس: '+e.message+'. دروس هذا الجهاز لم تُحذف.')}
+}
 action('ls-read',async()=>{const t=await token(),rows=await req('/rest/v1/bitaqati_lesson_bank?select=lesson&owner_id=eq.'+auth.user.id,{},t);let n=0;for(const {lesson:a} of rows){if(!a?.id||!a.title||!Array.isArray(a.quiz)||!a.hats||typeof a.source!=='string')continue;if(!localStorage.getItem(KEY+a.id)){localStorage.setItem(KEY+a.id,JSON.stringify(a));n++}}list(current?.id);cloud('دروس الحساب: '+rows.length+'، أُضيف لهذا الجهاز: '+n+'.')});
 action('ls-register',async()=>{
 const email=$('ls-email').value.trim(),password=$('ls-pass').value;
@@ -170,7 +189,7 @@ if(!$('ls-email').checkValidity()||!email)throw Error('أدخلي بريدًا �
 if(password.length<8)throw Error('كلمة المرور يجب أن تكون ٨ أحرف على الأقل.');
 const result=await req('/auth/v1/signup',{method:'POST',body:JSON.stringify({email,password})});
 $('ls-pass').value='';
-cloud(rememberAuth(result)?'تم إنشاء الحساب والدخول. يمكنك حفظ البيانات الآن.':'راجعي بريدك لتأكيد الحساب، ثم سجلي الدخول بكلمة المرور.');
+if(rememberAuth(result))await syncLessonsOnLogin();else cloud('راجعي بريدك لتأكيد الحساب، ثم سجلي الدخول بكلمة المرور.');
 });
 const snapshotKeys={quiz:'bitaqati-v1',learning:'bitaqati-learning-v2'};
 async function getSnapshots(){
